@@ -629,7 +629,7 @@
 					type :4
 				};
 				uni.showLoading({
-					title: '加载中'
+					title: '加载中!'
 				});
 				request.httpRequest(opts).then(res => {
 					uni.hideLoading();
