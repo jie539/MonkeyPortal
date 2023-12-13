@@ -61,6 +61,7 @@
 	└─timeline.vue			// 时间轴
 	└─timetables.vue		// 课程表
 ├─uview-ui				// uview-ui插件依赖
+├─uni_modules			// 插件
 ├─App.vue				// vue项目入口文件
 ├─LICENSE				// 许可证
 ├─main.js				// 公共js
