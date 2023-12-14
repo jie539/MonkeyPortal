@@ -212,6 +212,12 @@
 
 		</block>
 		
+		<view class="login-out">
+			<button class='content cu-btn' @click="GetLogin">
+				<text class='text-lg margin-sm'>退出登录</text>
+			</button>
+		</view>
+		
 		<!-- Gitee弹窗 -->
 		<view class="cu-modal" :class="modalName=='ModalGitee'?'show':''">
 			<view class="cu-dialog">
@@ -406,6 +412,11 @@
 			// 		url: '../me/course'
 			// 	})
 			// }
+			GetLogin() {
+				uni.navigateTo({
+					url:"/pages/login/login/login"
+				})
+			}
 		}
 	}
 </script>
@@ -1218,6 +1229,16 @@
 	.yellow:after {
 		border-color: transparent transparent transparent #ffcd5c;
 		animation-delay: 5.8s;
+	}
+	.login-out {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-bottom: 30rpx;
+	}
+	.login-out button {
+		background-color:  #0081ff;
+		color: #fff;
 	}
 
 	@keyframes star-ani {

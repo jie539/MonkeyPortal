@@ -67,7 +67,26 @@
 				uni.navigateTo({
 					url:'/pages/login/forgot/forgot/forgot'
 				})
-			}
+			},
+			signIn() {
+				// let opts = {
+				// 	url: 'portal/getStudentCourses?studentId='+249674,
+				// 	method: 'get',
+				// 	type :3
+				// };
+				// uni.showLoading({
+				// 	title: '登陆中!'
+				// });
+				// request.httpRequest(opts).then(res => {
+				// 	uni.hideLoading();
+				// 	console.log('error!');
+				// 	if (res.statusCode == 200) {					
+						
+				// 	} else {
+				// 		console.log('error!');
+				// 	}
+				// });
+			},
 		}
 	}
 </script>

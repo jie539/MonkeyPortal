@@ -144,9 +144,9 @@
 					// document.title = '文章资讯'
 				} else if (this.PageCur == 'me') {
 					// document.title = '个人中心'
-					uni.navigateTo({
-						url:'/pages/login/login/login'
-					})
+					// uni.navigateTo({
+					// 	url:'/pages/login/login/login'
+					// })
 				}
 
 				// uni.setStorage({
