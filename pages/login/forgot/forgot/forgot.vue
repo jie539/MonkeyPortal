@@ -21,7 +21,6 @@
 		</view>
 	</view>
 </template>
-
 <script>
 	export default {
 		data() {
@@ -63,6 +62,7 @@
 </script>
 
 <style>
+	@import url("../../../../Free/free.css");
 	.login-box {
 		width: 100%;
 		height: 100vh;
