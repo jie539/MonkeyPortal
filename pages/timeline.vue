@@ -544,7 +544,7 @@
 			};
 		},
 		onLoad(option) {
-			console.log(option.mid)
+			//console.log(option.mid)
 			if(option.mid == 1){
 				this.show = 1;
 			}else{
@@ -626,7 +626,7 @@
 				let opts = {
 					url: 'portal/getStudentCourses?studentId='+249674,
 					method: 'get',
-					type :4
+					type :3
 				};
 				uni.showLoading({
 					title: '加载中!'

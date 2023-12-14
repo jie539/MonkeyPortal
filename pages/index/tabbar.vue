@@ -87,10 +87,10 @@
 			};
 		},
 		onLoad(option){
-			console.log('来自页面:', option)
-			wx.showShareMenu({
-				withShareTicket: true
-			})
+			//console.log('来自页面:', option)
+			// wx.showShareMenu({
+			// 	withShareTicket: true
+			// })
 			if (option.type == 'matting') {
 				uni.navigateTo({
 					url: '../main/matting'
