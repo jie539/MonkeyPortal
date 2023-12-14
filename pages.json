@@ -571,7 +571,7 @@
 		"navigationBarBackgroundColor": "#F8F8F8",
 		"backgroundColor": "#F8F8F8",
 		"app-plus": {
-			"background": "#fff"
+			"background": "#ffffff"
 		}
 	},
 	"condition" : { //模式配置，仅开发期间生效
