@@ -607,8 +607,12 @@
 				this.current = current;
 			},
 			changeStudentCourse(){
-				this.studentCoursesByWeek = this.studentCourses.filter(course => course.week_day == this.TabCur);
-				
+				this.studentCoursesByWeek = this.studentCourses
+					.filter(course => course.week_day == this.TabCur)
+					.sort((a, b) => {
+					    // 直接比较时间字符串
+					    return a.course_end_time.localeCompare(b.course_end_time);
+					});
 				// 遍历每个课程，判断是否是上午，并添加 ismorning 属性
 				this.studentCoursesByWeek.forEach(course => {
 					// 从 course 中获取 course_end_time
@@ -624,7 +628,7 @@
 			},
 			getData() {
 				let opts = {
-					url: 'portal/getStudentCourses?studentId='+249674,
+					url: 'portal/getStudentCourses?studentId='+246955,
 					method: 'get',
 					type :3
 				};
