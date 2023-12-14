@@ -40,4 +40,5 @@
 	@import "colorui/main.css";
 	@import "colorui/icon.css";
 	@import "uview-ui/index.scss";
+	@import "Free/free.css";
 </style>

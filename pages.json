@@ -106,6 +106,39 @@
 			"style": {
 				"navigationStyle": "custom"
 			}
+		},
+		{
+			"path" : "pages/login/login/login",
+			"style" : 
+			{
+				"navigationBarTitleText" : "",
+				"enablePullDownRefresh" : false,
+				"app-plus": {
+					"titleNView":false
+				}
+			}
+		},
+		{
+			"path" : "pages/login/forgot/forgot/forgot",
+			"style" : 
+			{
+				"navigationBarTitleText" : "",
+				"enablePullDownRefresh" : false,
+				"app-plus": {
+					"titleNView":false
+				}
+			}
+		},
+		{
+			"path" : "pages/login/save/save/save",
+			"style" : 
+			{
+				"navigationBarTitleText" : "",
+				"enablePullDownRefresh" : false,
+				"app-plus": {
+					"titleNView":false
+				}
+			}
 		}
 	],
 	"subPackages": [{
