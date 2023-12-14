@@ -31,7 +31,7 @@
 				<text class='cuIcon-selection text-white text-lg bg-blue round padding-xs'></text>
 				<text class='text-xl margin-left'>学生课程</text>
 			</view>
-			<o-empty :height="emptyHight" v-if="!studentCoursesByWeek.length"/>
+			<o-empty v-if="!studentCoursesByWeek.length"/>
 			<view class="cu-item text-blue" v-for="(item,index) in studentCoursesByWeek" :key="index">
 				<view class="content solids-right solid-bottom shadow-lg" :class="index==0?'bg-blue':''">
 <!-- 					<view class="cu-capsule radius">
@@ -540,7 +540,7 @@
 				dx: 0,
 				TabCur: 0,
 				scrollLeft: 0,
-				emptyHight:'900',
+				//emptyHight:'900',
 			};
 		},
 		onLoad(option) {
@@ -552,7 +552,7 @@
 			}
 		},
 		onReady() {
-			this.getHeight();
+			//this.getHeight();
 		},
 		watch: {
 		    TabCur: function () {
@@ -658,11 +658,14 @@
 		height: 100%;
 		background-color: #f2f2f2;
 	}
-
 	/* #endif */
 </style>
 
 <style lang="scss" scoped>
+	page {
+		height: 100%;
+		background-color: #ffffff;
+	}
 	.cu-timeline .cu-time {
 		width: 100%;
 		text-align: left;
