@@ -38,6 +38,7 @@
 </template>
 
 <script>
+	import request from '@/common/request.js';
 	export default {
 		data() {
 			return {
@@ -49,6 +50,7 @@
 					number:''
 				},
 				type:"login",
+				studentId:'',
 			}
 		},
 		methods: {
@@ -69,23 +71,36 @@
 				})
 			},
 			signIn() {
-				// let opts = {
-				// 	url: 'portal/getStudentCourses?studentId='+249674,
-				// 	method: 'get',
-				// 	type :3
-				// };
-				// uni.showLoading({
-				// 	title: '登陆中!'
-				// });
-				// request.httpRequest(opts).then(res => {
-				// 	uni.hideLoading();
-				// 	console.log('error!');
-				// 	if (res.statusCode == 200) {					
-						
-				// 	} else {
-				// 		console.log('error!');
-				// 	}
-				// });
+				let opts = {
+					url: 'portal/login?telephone='+ this.loginForm.login + '&password=' + this.loginForm.password,
+					method: 'get',
+					type :3
+				};
+				uni.showLoading({
+					title: '登陆中!'
+				});
+				uni.getStorage({
+					key:'guardianId',
+					success: function (res) {
+						// console.log(res.data);
+						this.studentId = res.data;
+					}
+				});
+				request.httpRequest(opts).then(res => {
+					if (res.statusCode == 200) {					
+						uni.hideLoading();
+						console.log(res.data.guardianId);
+						uni.setStorage({
+							key:'guardianId',
+							data:res.data.guardianId,
+						});
+						uni.navigateTo({
+							url:'/',
+						})
+					} else {
+						console.log('error!');
+					}
+				});
 			},
 		}
 	}

@@ -5,6 +5,7 @@
 			<!-- <block slot="backText">返回</block> -->
 			<block slot="content">首页</block>
 		</cu-custom>
+	<h1></h1>
 
 		<add-tip :tip="tip" :duration="duration" />
 
