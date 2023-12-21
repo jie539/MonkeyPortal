@@ -58,7 +58,7 @@
 						<image src="../../static/logo.png" style="width: 100%; height: 100%;"></image>
 					</view>
 					<view class="padding text-blue text-xl text-bold">
-						你好，开发者！
+						你好，{{this.studentName}}！
 					</view>
 
 				</view>
@@ -208,10 +208,36 @@
 						<text class='text-lg margin-sm'>关于作者</text>
 					</button>
 				</view>
+				<view class="cu-item">
+					<button class='content cu-btn' open-type="feedback" @tap="showStudent" data-target="DialogModal1">
+						<image src='../../static/me/icon/chucuo.png' class='png' mode='aspectFit'></image>
+						<text class='text-lg margin-sm'>切换角色</text>
+					</button>
+				</view>
 			</view>
 
 		</block>
 		
+		<view class="cu-modal" :class="modalName=='DialogModal1'?'show':''">
+			<view class="cu-dialog">
+				<view class="cu-bar bg-white justify-end">
+					<view class="content">切换角色</view>
+					<view class="action" @tap="hideModal">
+						<text class="cuIcon-close text-red"></text>
+					</view>
+				</view>
+				<view class="padding-xl " style="display: flex;flex-direction: column;">		
+					<button class="cu-btn round margin-top-xs" :class="{ 'bg-cyan': selectedIndex === index }" v-for="(item,index) in (studentInfo)" :key="index" @click="changeStudent(index)">{{item.first_name}}</button>
+				</view>
+				<view class="cu-bar bg-white justify-end">
+					<view class="action">
+						<button class="cu-btn line-green text-green" @tap="hideModal">取消</button>
+						<button class="cu-btn bg-green margin-left" @tap="confirm">确定</button>
+					</view>
+				</view>
+			</view>
+		</view>
+			
 		<view class="login-out">
 			<button class='content cu-btn' @click="GetLogin">
 				<text class='text-lg margin-sm'>退出登录</text>
@@ -257,6 +283,7 @@
 			return {
 				// Custom: this.Custom,
 				// CustomBar: this.CustomBar,
+				isChangeStudent:false,
 				spaceShow:true,
 				modalName: null,
 				picName: '流星之夜',
@@ -304,7 +331,11 @@
 					title: 'theme',
 					name: '流星之夜',
 					color: ''
-				}]
+				}],
+				studentInfo:[],
+				studentId:'',
+				selectedIndex:-1,
+				studentName:'开发者'
 			}
 		},
 		// 分享小程序
@@ -343,6 +374,15 @@
 			//     duration: 2000
 			// });
 		},
+		created() {
+			const that =this;
+			uni.getStorage({
+				key:'studentName',
+				success: function (res) {
+						that.studentName = res.data
+				}
+			})
+		},
 		methods: {
 			// playVideo(){
 			// 	videoAd.show()
@@ -354,6 +394,33 @@
 			// 	    })
 			// 	})
 			// },
+			confirm(){
+				uni.setStorage({
+					key:'studentId',
+					data:this.studentInfo[this.selectedIndex].student_id,
+				});
+				uni.setStorage({
+					key:'studentName',
+					data:this.studentInfo[this.selectedIndex].first_name,
+				});
+				this.studentName = this.studentInfo[this.selectedIndex].first_name;
+				this.modalName = null
+				this.selectedIndex = -1
+			},
+			changeStudent(e){
+				this.studentId = this.studentInfo
+				this.selectedIndex = e;
+			},
+			showStudent(e){
+				this.modalName = e.currentTarget.dataset.target
+				const that = this;
+				uni.getStorage({
+					key:'studentInfo',
+					success: function (res) {
+							that.studentInfo = res.data
+					}
+				})
+			},
 			getGitee(){
 				uni.setClipboardData({
 				    data: 'https://gitee.com/kevin_chou',
@@ -416,6 +483,7 @@
 				uni.navigateTo({
 					url:"/pages/login/login/login"
 				})
+				uni.clearStorage()
 			}
 		}
 	}

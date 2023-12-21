@@ -540,6 +540,7 @@
 				dx: 0,
 				TabCur: 0,
 				scrollLeft: 0,
+				studentId:''
 				//emptyHight:'900',
 			};
 		},
@@ -627,8 +628,10 @@
 				});
 			},
 			getData() {
+				console.log(this.studentId);	
 				let opts = {
-					url: 'portal/getStudentCourses?studentId='+246955,
+					// url: 'portal/getStudentCourses?studentId='+246955,
+					url: 'portal/getStudentCourses?studentId='+this.studentId,
 					method: 'get',
 					type :3
 				};
@@ -647,11 +650,19 @@
 			},
 		},
 		created() {
+			const that = this;
 			const currentDate = new Date();
 			this.currentDay = currentDate.getDate();
 			this.currentMonth = this.monthNames[currentDate.getMonth()];	
-			this.getData();
+			
 			this.TabCur = currentDate.getDay();
+			uni.getStorage({
+				key:'studentId',
+				success: function (res) {	
+					that.studentId = res.data;
+				}
+			})
+			this.getData();
 		}
 	};
 </script>

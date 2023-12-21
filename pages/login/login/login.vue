@@ -90,9 +90,18 @@
 					if (res.statusCode == 200) {					
 						uni.hideLoading();
 						console.log(res.data.guardianId);
+						console.log(res.data.studentInfo);
+						// uni.setStorage({
+						// 	key:'guardianId',
+						// 	data:res.data.guardianId,
+						// });
 						uni.setStorage({
-							key:'guardianId',
-							data:res.data.guardianId,
+							key:'studentInfo',
+							data:res.data.studentInfo,
+						});
+						uni.setStorage({
+							key:'studentId',
+							data:res.data.studentInfo[0].student_id,
 						});
 						uni.navigateTo({
 							url:'/',
