@@ -160,7 +160,7 @@
 						color: 'red',
 						badge: '优惠',
 						mid: '1',
-						name: '学习技术'
+						name: '课程表'
 					},
 					{
 						cuIcon: 'colorlens',

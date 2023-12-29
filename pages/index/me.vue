@@ -38,7 +38,7 @@
 			</view>
 		</view>
 		<!-- 顶部背景 -->
-		<view class='UCenter-bg' :style="'background-image: url(' + pic[topBackGroupImageIndex].link + ');margin-top:' + CustomBar + 'px;'">
+		<view class='UCenter-bg' :style="'background-image: url(' + pic[topBackGroupImageIndex].link + ');'">
 			<view class='space' v-show="spaceShow">
 				<view class="stars ">
 					<view class="star "></view>
@@ -58,7 +58,7 @@
 						<image src="../../static/logo.png" style="width: 100%; height: 100%;"></image>
 					</view>
 					<view class="padding text-blue text-xl text-bold">
-						你好，{{this.studentName}}！
+						{{$t('hello')}}，{{ studentName }}！
 					</view>
 
 				</view>
@@ -214,6 +214,12 @@
 						<text class='text-lg margin-sm'>切换角色</text>
 					</button>
 				</view>
+				<view class="cu-item">
+					<button class='content cu-btn' open-type="feedback" @tap="showLang" data-target="DialogModal2">
+						<image src='../../static/me/icon/chucuo.png' class='png' mode='aspectFit'></image>
+						<text class='text-lg margin-sm'>切换语言</text>
+					</button>
+				</view>
 			</view>
 
 		</block>
@@ -233,6 +239,26 @@
 					<view class="action">
 						<button class="cu-btn line-green text-green" @tap="hideModal">取消</button>
 						<button class="cu-btn bg-green margin-left" @tap="confirm">确定</button>
+					</view>
+				</view>
+			</view>
+		</view>
+			
+		<view class="cu-modal" :class="modalName=='DialogModal2'?'show':''">
+			<view class="cu-dialog">
+				<view class="cu-bar bg-white justify-end">
+					<view class="content">切换语言</view>
+					<view class="action" @tap="hideModal">
+						<text class="cuIcon-close text-red"></text>
+					</view>
+				</view>
+				<view class="padding-xl " style="display: flex;flex-direction: column;">		
+					<button class="cu-btn round margin-top-xs" :class="{ 'bg-cyan': selectedIndexLang === index }" v-for="(item,index) in (getLang)" :key="index" @click="changeLang(index)">{{item}}</button>
+				</view>
+				<view class="cu-bar bg-white justify-end">
+					<view class="action">
+						<button class="cu-btn line-green text-green" @tap="hideModal">取消</button>
+						<button class="cu-btn bg-green margin-left" @tap="confirmLang">确定</button>
 					</view>
 				</view>
 			</view>
@@ -332,10 +358,8 @@
 					name: '流星之夜',
 					color: ''
 				}],
-				studentInfo:[],
-				studentId:'',
 				selectedIndex:-1,
-				studentName:'开发者'
+				selectedIndexLang:-1
 			}
 		},
 		// 分享小程序
@@ -356,70 +380,42 @@
 			}
 		},
 		mounted() {
-			// 在页面中定义激励视频广告
-			// let videoAd = null
-			
-			// 在页面onLoad回调事件中创建激励视频广告实例
-			// if (wx.createRewardedVideoAd) {
-			//   videoAd = wx.createRewardedVideoAd({
-			//     adUnitId: 'adunit-5620518afa0bd171'
-			//   })
-			//   videoAd.onLoad(() => {})
-			//   videoAd.onError((err) => {})
-			//   videoAd.onClose((res) => {})
-			// }
-			// uni.showToast({
-			//     title: '暂未开放,敬请期待',
-			// 	icon: 'none',
-			//     duration: 2000
-			// });
+		},
+		computed:{
+			studentName(){
+				return this.$store.getters.studentName;
+			},
+			studentInfo(){
+				return this.$store.getters.studentInfo;
+			},
+			getLang(){
+				return this.$store.getters.lang;
+			}
 		},
 		created() {
-			const that =this;
-			uni.getStorage({
-				key:'studentName',
-				success: function (res) {
-						that.studentName = res.data
-				}
-			})
 		},
 		methods: {
-			// playVideo(){
-			// 	videoAd.show()
-			// 	.catch(() => {
-			// 	    videoAd.load()
-			// 	    .then(() => videoAd.show())
-			// 	    .catch(err => {
-			// 	      console.log('激励视频 广告显示失败')
-			// 	    })
-			// 	})
-			// },
 			confirm(){
-				uni.setStorage({
-					key:'studentId',
-					data:this.studentInfo[this.selectedIndex].student_id,
-				});
-				uni.setStorage({
-					key:'studentName',
-					data:this.studentInfo[this.selectedIndex].first_name,
-				});
-				this.studentName = this.studentInfo[this.selectedIndex].first_name;
+				this.$store.dispatch('setStudentInfo', this.selectedIndex);
 				this.modalName = null
 				this.selectedIndex = -1
 			},
+			confirmLang(){
+				localStorage.setItem('lang',this.$store.getters.lang[this.selectedIndexLang])
+				this.$i18n.locale = this.$store.getters.lang[this.selectedIndexLang];
+				this.modalName = null
+			},
 			changeStudent(e){
-				this.studentId = this.studentInfo
 				this.selectedIndex = e;
 			},
+			changeLang(e){
+				this.selectedIndexLang = e;
+			},
 			showStudent(e){
-				this.modalName = e.currentTarget.dataset.target
-				const that = this;
-				uni.getStorage({
-					key:'studentInfo',
-					success: function (res) {
-							that.studentInfo = res.data
-					}
-				})
+				this.modalName = e.currentTarget.dataset.target		
+			},
+			showLang(e){
+				this.modalName = e.currentTarget.dataset.target		
 			},
 			getGitee(){
 				uni.setClipboardData({

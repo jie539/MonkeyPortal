@@ -45,8 +45,8 @@
 				eyeFill:true,
 				loginForm:{
 					name:'',
-					login:'',
-					password:'',
+					login:'85215014205686',
+					password:'123456',
 					number:''
 				},
 				type:"login",
@@ -79,30 +79,12 @@
 				uni.showLoading({
 					title: '登陆中!'
 				});
-				uni.getStorage({
-					key:'guardianId',
-					success: function (res) {
-						// console.log(res.data);
-						this.studentId = res.data;
-					}
-				});
 				request.httpRequest(opts).then(res => {
 					if (res.statusCode == 200) {					
 						uni.hideLoading();
-						console.log(res.data.guardianId);
-						console.log(res.data.studentInfo);
-						// uni.setStorage({
-						// 	key:'guardianId',
-						// 	data:res.data.guardianId,
-						// });
-						uni.setStorage({
-							key:'studentInfo',
-							data:res.data.studentInfo,
-						});
-						uni.setStorage({
-							key:'studentId',
-							data:res.data.studentInfo[0].student_id,
-						});
+						this.$store.state.user.studentInfo = res.data.studentInfo;
+						this.$store.state.user.studentId = res.data.studentInfo[0].student_id;
+						this.$store.state.user.studentName = res.data.studentInfo[0].student_name;				
 						uni.navigateTo({
 							url:'/',
 						})

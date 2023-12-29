@@ -16,7 +16,7 @@
 					</view>
 				</view>
 				<view class="flex-sub padding-sm margin-xs radius cf">
-					<button class="cu-btn bg-blue shadow fr margin-top">+ Add Task</button>
+					<button class="cu-btn bg-blue shadow fr margin-top" @click="task">+ Add Task</button>
 				</view>
 			</view>
 			
@@ -500,6 +500,7 @@
 
 <script>
 	import request from '@/common/request.js';
+	import { mapState } from 'vuex';
 	export default {
 		data() {
 			return {
@@ -562,6 +563,8 @@
 		    },
 		  },
 		methods: {
+			task(){
+			},
 			getHeight(){
 				// 使用 wx.createSelectorQuery 创建查询对象
 				  var query = wx.createSelectorQuery();
@@ -628,7 +631,6 @@
 				});
 			},
 			getData() {
-				console.log(this.studentId);	
 				let opts = {
 					// url: 'portal/getStudentCourses?studentId='+246955,
 					url: 'portal/getStudentCourses?studentId='+this.studentId,
@@ -650,18 +652,11 @@
 			},
 		},
 		created() {
-			const that = this;
 			const currentDate = new Date();
 			this.currentDay = currentDate.getDate();
 			this.currentMonth = this.monthNames[currentDate.getMonth()];	
-			
 			this.TabCur = currentDate.getDay();
-			uni.getStorage({
-				key:'studentId',
-				success: function (res) {	
-					that.studentId = res.data;
-				}
-			})
+			this.studentId = this.$store.getters.studentId;
 			this.getData();
 		}
 	};
