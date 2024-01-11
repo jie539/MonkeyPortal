@@ -136,7 +136,6 @@
 		methods: {
 			getData() {
 				var type = this.navTop[this.TabCur].id;
-				console.log(type)
 				if(type == 1){
 					type = '';
 				}

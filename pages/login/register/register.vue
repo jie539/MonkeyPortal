@@ -5,8 +5,15 @@
 		<image class="img-a" src="https://zhoukaiwen.com/img/loginImg/2.png"></image>
 		<!-- 标题 -->
 		<view class="t-b">{{ title }}</view>
-		<view class="t-b2">Please login to continue using our app</view>
+		<view class="t-b2">Enter the phone your've registered at Monkey Tree</view>
 		<form class="cl">
+			<view class="t-a">
+				<picker @change="PickerChange" :value="index" :range="picker">
+					<image :src="require('@/static/login/local.png')"></image>
+					<view class="line"></view>
+					<input type="text" placeholder="请选择地区" v-model="local"/>
+				</picker>			
+			</view>
 			<view class="t-a">
 				<image src="https://zhoukaiwen.com/img/loginImg/user.png"></image>
 				<view class="line"></view>
@@ -17,12 +24,19 @@
 				<view class="line"></view>
 				<input type="password" name="code" maxlength="16" placeholder="Please enter your password" v-model="pwd" />
 			</view>
-			<button @tap="login()">Login</button>
-			<view class="text-gray flex justify-between padding-lr-sm padding-top-sm">
-				<text @click="reg">Sign Up</text>
-				<text @click="forget">forgot</text>
+			<view class="t-a">
+				<image src="https://zhoukaiwen.com/img/loginImg/yz.png"></image>
+				<view class="line"></view>
+				<input type="number" name="code" maxlength="6" placeholder="Please enter code" v-model="yzm" />
+				<view v-if="showText" class="t-c" @tap="send()">send</view>
+				<view v-else class="t-c" style="background-color: #A7A7A7;">Resend({{ second }})</view>
 			</view>
+			<button @tap="verify()">Confirm</button>
 		</form>
+		<view class="t-f"><text>————— Back —————</text></view>
+		<view class="t-e cl">
+			<u-icon v-if="loginType === 'phone'" name="account-fill" color="#b4b3b1" size="56" @tap="phoneLogin"></u-icon>
+		</view>
 		
 	</view>
 </template>
@@ -31,21 +45,38 @@
 	export default {
 		data() {
 			return {
-				title: 'Welcome!', //填写logo或者app名称，也可以用：欢迎回来，看您需求
+				interval:null,
+				index:0,
+				picker: ['CN', 'CN-HK', 'CN-MO'],
+				areaCode: ['+86','852','853'],
+				title: 'Sign Up', //填写logo或者app名称，也可以用：欢迎回来，看您需求
 				second: 60, //默认60秒
 				showText: true, //判断短信是否发送
-				account:'15014205686',
+				account:'13189416081',
 				phone: '', //手机号码
-				email:'809052487@qq.com', //邮箱号
-				yzm: '' ,//验证码
+				email:'', //邮箱号
+				yzm: '123456' ,//验证码
 				pwd:'123456', //密码
 				loginType:'phone' //登录类型
 			};
 		},
-		onLoad() {},
+		onUnload() {
+			this.stopTimer();
+		},
+		computed:{
+			local(){
+				return this.picker[this.index]
+			},
+			getPhone(){
+				return this.areaCode[this.index] + this.account;
+			}
+		},
 		methods: {
+			PickerChange(e) {
+			    this.index = e.detail.value
+			},
 			//当前登录按钮操作
-			login() {
+			verify() {
 				if (!this.account) {
 					uni.showToast({ title: 'Please enter your account', icon: 'none' });
 					return;
@@ -55,27 +86,56 @@
 					uni.showToast({ title: 'Please enter your password', icon: 'none' });
 					return;
 				}
-					
+				
+				if (!this.yzm) {
+					uni.showToast({ title: 'Please enter your code', icon: 'none' });
+					return;
+				}
+			
+				this.verifyAccount();
+				this.updataPassword();
+			},
+			verifyAccount(){
 				if (/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(this.account)) {
 					this.email = this.account;
 				}else if(/^([6|9|5])\d{7}$/.test(this.account) || /^1[3-9]\d{9}$/.test(this.account)){
-					this.phone = this.account;
+					this.phone = this.getPhone;
 				}else{
 					uni.showToast({ title: 'Please enter your phone or email', icon: 'none' });
 				}
-				this.getData();
 			},
-			//登录接口
-			getData() {
+			//获取短信验证码
+			send() {
+				var that = this;
+				this.interval = setInterval(() => {
+					that.showText = false;
+					var times = that.second - 1;
+					//that.second = times<10?'0'+times:times ;//小于10秒补 0
+					that.second = times;
+					console.log(times);
+				}, 1000);
+				setTimeout(() => {
+					this.stopTimer();
+				}, 60000);
+				//这里请求后台获取短信验证码
+				this.sendCode();
+			},
+			stopTimer() {
+				clearInterval(this.interval);
+				this.second = 60;
+				this.showText = true;
+			},
+			//短信验证码接口
+			sendCode() {
+				this.verifyAccount();
 				let that = this;
 				const userInfo = {
 					email: that.email,
 					telephone: that.phone,
-					password: that.pwd
 				}
 				
 				let opts = {
-					url: 'portal/login',
+					url: 'portal/sendCodeAndCheck',
 					method: 'post',
 					type :5
 				};
@@ -87,30 +147,63 @@
 				request.httpRequest(opts,userInfo).then(res => {
 					uni.hideLoading();
 					if (res.data.code === 200) {					
-						const userInfo = res.data.studentInfo
-						this.$store.dispatch('setUserInfo', userInfo);
-						uni.navigateTo({
-							url:'/',
-						})
+						console.log(res.data);
+						uni.showToast({ title: 'Sent successfully', icon: 'none' });
 					} else {
+						console.log(res.data.msg);
 						uni.showToast({ title: res.data.msg, icon: 'none' });
 					}
 				});
 			},
-			reg(){
-				uni.navigateTo({
-					url:'/pages/login/register/register'
-				})
+			//验证code
+			updataPassword(){
+				let that = this;
+				const userInfo = {
+					email: that.email,
+					telephone: that.phone,
+					password: that.pwd
+				}
+				
+				let opts = {
+					url: `portal/register?code=${that.yzm}`,
+					method: 'post',
+					type :5
+				};
+				
+				uni.showLoading({
+					title: 'Loading!'
+				});
+				
+				request.httpRequest(opts,userInfo).then(res => {
+					uni.hideLoading();
+					if (res.data.code === 200) {					
+						console.log(res.data);
+						uni.showToast({ title: 'Registration successful!', icon: 'success' });
+						setTimeout(()=>{
+							uni.navigateTo({
+								url:'/pages/login/login/login'
+							})
+						},3000)
+					} else {
+						uni.showToast({ title: res.data.msg, icon: 'none' });
+						console.log(res.data.msg);
+					}
+				});
 			},
-			forget(){
+			phoneLogin(){
 				uni.navigateTo({
-					url:'/pages/login/forgot/forgot'
+					url:'/pages/login/login/login'
 				})
 			},
 		}
 	};
 </script>
 <style>
+.area-code{
+	position: absolute;
+	top:30rpx;
+	left: 24rpx;
+}	
 .img-a {
 	position: absolute;
 	width: 100%;
@@ -122,7 +215,6 @@
 	width: 50%;
 	bottom: 0;
 	left: -50rpx;
-	/* margin-bottom: -200rpx; */
 }
 .t-login {
 	width: 650rpx;
@@ -172,14 +264,14 @@
 	background-color: #dedede;
 	position: absolute;
 	top: 28rpx;
-	left: 98rpx;
+	left: 108rpx;
 }
 
 .t-login .t-b {
 	text-align: left;
 	font-size: 46rpx;
 	color: #000;
-	padding: 300rpx 0 30rpx 0;
+	padding: 290rpx 0 30rpx 0;
 	font-weight: bold;
 }
 .t-login .t-b2 {

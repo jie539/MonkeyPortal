@@ -58,7 +58,7 @@
 						<image src="../../static/logo.png" style="width: 100%; height: 100%;"></image>
 					</view>
 					<view class="padding text-blue text-xl text-bold">
-						{{$t('hello')}}，{{ studentName }}！
+						{{$t('me.hello')}}，{{ studentName }}！
 					</view>
 
 				</view>
@@ -73,17 +73,17 @@
 				<view class='flex flex-sub flex-direction solid-right'>
 					<view class="text-xxl text-orange">35.6k+</view>
 					<view class="margin-top-sm">
-						<text class='cuIcon-hot'></text> 访客</view>
+						<text class='cuIcon-hot'></text> {{$t('me.visitor')}}</view>
 				</view>
 				<view class='flex flex-sub flex-direction solid-right'>
 					<view class="text-xxl text-blue">15.6k</view>
 					<view class="margin-top-sm">
-						<text class='cuIcon-share'></text> 分享</view>
+						<text class='cuIcon-share'></text> {{$t('me.share')}}</view>
 				</view>
 				<view class='flex flex-sub flex-direction'>
 					<view class="text-xxl text-red">5.5k+</view>
 					<view class="margin-top-sm">
-						<text class='cuIcon-like'></text> 点赞</view>
+						<text class='cuIcon-like'></text> {{$t('me.like')}}</view>
 				</view>
 			</view>
 			
@@ -93,7 +93,7 @@
 				<view class="cu-item" @tap="showModal" data-target="Modal">
 					<view class='content'>
 						<image src='../../static/me/icon/zhuti.png' class='png' mode='aspectFit'></image>
-						<text class='text-lg margin-sm'>主题切换</text>
+						<text class='text-lg margin-sm'>{{$t('me.themeSwitch')}}</text>
 					</view>
 					<view class='action'>
 						<view class="cu-capsule radius">
@@ -110,7 +110,7 @@
 				<view class="cu-item " @click="mentalTest">
 					<button class='content cu-btn'>
 						<image src='../../static/me/icon/bianqian.png' class='png' mode='aspectFit'></image>
-						<text class='text-lg margin-sm'>答题测试</text>
+						<text class='text-lg margin-sm'>{{$t('me.quizTest')}}</text>
 					</button>
 					<view class="action">
 						<view class="cu-tag round bg-orange light">技术</view>
@@ -139,7 +139,7 @@
 				<view class="cu-item">
 					<button class='content cu-btn' open-type="share">
 						<image src='../../static/me/icon/lvhang.png' class='png' mode='aspectFit'></image>
-						<text class='text-lg margin-sm'>分享小程序</text>
+						<text class='text-lg margin-sm'>{{$t('me.shareMiniProgram')}}</text>
 					</button>
 				</view>
 				
@@ -157,7 +157,7 @@
 				<view class="cu-item">
 					<button class='content cu-btn' @tap="showGitee" data-target="ModalGitee">
 						<image style="border-radius: 50rpx;" src='https://zhoukaiwen.com/img/icon/gitee_logo.jpeg' class='png' mode='aspectFit'></image>
-						<text class='text-lg margin-sm'>下载小程序源码</text>
+						<text class='text-lg margin-sm'>{{$t('me.downloadMiniProgramSourceCode')}}</text>
 					</button>
 				</view>
 
@@ -182,14 +182,14 @@
 				<view class="cu-item ">
 					<button class='content cu-btn' open-type="contact">
 						<image src='../../static/me/icon/diannao.png' class='png' mode='aspectFit'></image>
-						<text class='text-lg margin-sm'>项目需求</text>
+						<text class='text-lg margin-sm'>{{$t('me.projectRequirements')}}</text>
 					</button>
 				</view>
 
 				<view class="cu-item" @click="callPhoneNumber" data-number="18629591093">
 					<view class='content'>
 						<image src='../../static/me/icon/dengta.png' class='png' mode='aspectFit'></image>
-						<text class='text-lg margin-sm'>技术支持</text>
+						<text class='text-lg margin-sm'>{{$t('me.technicalSupport')}}</text>
 					</view>
 					<view class="action">
 						<view class="cu-tag round bg-blue light">186 2959 1093</view>
@@ -199,25 +199,25 @@
 				<view class="cu-item">
 					<button class='content cu-btn' open-type="feedback">
 						<image src='../../static/me/icon/chucuo.png' class='png' mode='aspectFit'></image>
-						<text class='text-lg margin-sm'>问题反馈</text>
+						<text class='text-lg margin-sm'>{{$t('me.feedback')}}</text>
 					</button>
 				</view>
 				<view class="cu-item">
 					<button class='content cu-btn' @click="goAboutMe">
 						<image src='../../static/me/icon/xiaoxi.png' class='png' mode='aspectFit'></image>
-						<text class='text-lg margin-sm'>关于作者</text>
+						<text class='text-lg margin-sm'>{{$t('me.aboutAuthor')}}</text>
 					</button>
 				</view>
 				<view class="cu-item">
 					<button class='content cu-btn' open-type="feedback" @tap="showStudent" data-target="DialogModal1">
 						<image src='../../static/me/icon/chucuo.png' class='png' mode='aspectFit'></image>
-						<text class='text-lg margin-sm'>切换角色</text>
+						<text class='text-lg margin-sm'>{{$t('me.switchRole')}}</text>
 					</button>
 				</view>
 				<view class="cu-item">
 					<button class='content cu-btn' open-type="feedback" @tap="showLang" data-target="DialogModal2">
 						<image src='../../static/me/icon/chucuo.png' class='png' mode='aspectFit'></image>
-						<text class='text-lg margin-sm'>切换语言</text>
+						<text class='text-lg margin-sm'>{{$t('me.language')}}</text>
 					</button>
 				</view>
 			</view>
@@ -227,7 +227,7 @@
 		<view class="cu-modal" :class="modalName=='DialogModal1'?'show':''">
 			<view class="cu-dialog">
 				<view class="cu-bar bg-white justify-end">
-					<view class="content">切换角色</view>
+					<view class="content">{{$t('me.switchRole')}}</view>
 					<view class="action" @tap="hideModal">
 						<text class="cuIcon-close text-red"></text>
 					</view>
@@ -247,7 +247,7 @@
 		<view class="cu-modal" :class="modalName=='DialogModal2'?'show':''">
 			<view class="cu-dialog">
 				<view class="cu-bar bg-white justify-end">
-					<view class="content">切换语言</view>
+					<view class="content">{{$t('me.language')}}</view>
 					<view class="action" @tap="hideModal">
 						<text class="cuIcon-close text-red"></text>
 					</view>
@@ -265,8 +265,8 @@
 		</view>
 			
 		<view class="login-out">
-			<button class='content cu-btn' @click="GetLogin">
-				<text class='text-lg margin-sm'>退出登录</text>
+			<button class='content cu-btn margin-bottom-sm' @click="GetLogin">
+				<text class='text-lg margin'>{{$t('me.logout')}}</text>
 			</button>
 		</view>
 		

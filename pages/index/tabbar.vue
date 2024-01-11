@@ -112,28 +112,26 @@
 					url: 'api/blog/list',
 					method: 'get'
 				};
-				uni.showLoading({
-					title: '加载中'
-				});
-				request.httpRequest(opts).then(res => {
-					// console.log(res);
-					uni.hideLoading();
-					if (res.statusCode == 200) {
-						this.message = res.data.data.length;
-					} else {
-						console.log('数据请求错误～');
-					}
-				});
+				// uni.showLoading({
+				// 	title: '加载中'
+				// });
+				// request.httpRequest(opts).then(res => {
+				// 	// console.log(res);
+				// 	uni.hideLoading();
+				// 	if (res.statusCode == 200) {
+				// 		this.message = res.data.data.length;
+				// 	} else {
+				// 		console.log('数据请求错误～');
+				// 	}
+				// });
 			},
 			ShowNews(e){
 				console.log(e)
 				this.PageCur = e;
 			},
 			NavChange: function(e) {
-				console.log(e.currentTarget.dataset.cur)
 
 				this.PageCur = e.currentTarget.dataset.cur;
-
 				if (this.PageCur == 'index') {
 					// document.title = '首页'
 				} else if (this.PageCur == 'component') {

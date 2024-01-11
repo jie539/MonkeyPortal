@@ -11,6 +11,9 @@ const httpRequest = (opts, data) => {
 		baseUrl = 'https://gamejava.monkeytree.com.hk/';
 	}else if(opts.type == 4){
 		baseUrl = 'http://localhost:8080/monkeytownHK/';
+	}else if(opts.type == 5){
+		baseUrl = 'http://localhost:8085/';
+		//baseUrl = 'http://194.233.70.163:8089/';
 	}else{
 		baseUrl = 'https://api.zhoukaiwen.com/';
 	}

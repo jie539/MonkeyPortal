@@ -7,7 +7,7 @@
 		</cu-custom>
 	<h1></h1>
 
-		<add-tip :tip="tip" :duration="duration" />
+<!-- 		<add-tip :tip="tip" :duration="duration" /> -->
 
 		<!-- banner图 -->
 		<!-- <view class="uni-padding-wrap">
@@ -130,7 +130,7 @@
 	import addTip from '../../components/wxcomponents/struggler-uniapp-add-tip/struggler-uniapp-add-tip.vue';
 	export default {
 		components: {
-			addTip
+			//addTip
 		},
 		data() {
 			return {
@@ -221,7 +221,6 @@
 		},
 		watch: {},
 		mounted() {
-			console.log(this.projectList);
 			this.getData();
 			
 			
@@ -253,26 +252,26 @@
 					url: 'api/project/list',
 					method: 'get'
 				};
-				uni.showLoading({
-					title: '加载中'
-				});
-				request.httpRequest(opts).then(res => {
-					console.log(res);
-					uni.hideLoading();
-					if (res.statusCode == 200) {
-						this.projectList = res.data.data;
-					} else {
-						this.projectList = [];
-					}
-				});
+				// uni.showLoading({
+				// 	title: '加载中'
+				// });
+				// request.httpRequest(opts).then(res => {
+				// 	uni.hideLoading();
+				// 	if (res.statusCode == 200) {
+				// 		this.projectList = res.data.data;
+				// 	} else {
+				// 		this.projectList = [];
+				// 	}
+				// });
 			},
 			scroll: function(e) {
 				console.log(e);
 				this.old.scrollTop = e.detail.scrollTop;
 			},
 			goCategorieslist: function(e) {
-				// console.log(e.currentTarget.dataset.mid)
+				 console.log(e.currentTarget.dataset.mid)
 				if (e.currentTarget.dataset.mid == 1 || e.currentTarget.dataset.mid == 2) {
+					console.log(555);
 					uni.navigateTo({
 						url: '../timeline?mid=' + e.currentTarget.dataset.mid
 					});

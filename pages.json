@@ -108,7 +108,7 @@
 			}
 		},
 		{
-			"path" : "pages/login/login/login",
+			"path" : "pages/login/login/index",
 			"style" : 
 			{
 				"navigationBarTitleText" : "",
@@ -119,7 +119,34 @@
 			}
 		},
 		{
-			"path" : "pages/login/forgot/forgot/forgot",
+			"path": "pages/login/login/login",
+			"style": {
+				"navigationStyle": "custom",
+				"app-plus": {
+					"titleNView": false
+				}
+			}
+		},
+		{
+			"path": "pages/login/forgot/forgot",
+			"style": {
+				"navigationStyle": "custom",
+				"app-plus": {
+					"titleNView": false
+				}
+			}
+		},
+		{
+			"path": "pages/login/register/register",
+			"style": {
+				"navigationStyle": "custom",
+				"app-plus": {
+					"titleNView": false
+				}
+			}
+		},
+		{
+			"path" : "pages/login/forgot/forgot",
 			"style" : 
 			{
 				"navigationBarTitleText" : "",

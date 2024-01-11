@@ -66,7 +66,7 @@
 				<view class="cu-avatar lgs round margin-right-sm margin-left-xs fl"
 					style="background-image:url(https://cdn.zhoukaiwen.com/qdpz_hy3.svg);"></view>
 				<view class="text-bold fl margin-top-xs text-shadow">VIP会员 ·<text class="text-orange">￥699</text></view>
-				<viwe class="text-grey text-sm margin-top-xs fl text-shadow">组件永久免费，详情点击 👉</viwe>
+				<view class="text-grey text-sm margin-top-xs fl text-shadow">组件永久免费，详情点击 👉</view>
 			</view>
 
 
