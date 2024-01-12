@@ -34,11 +34,11 @@
 				title: 'Welcome!', //填写logo或者app名称，也可以用：欢迎回来，看您需求
 				second: 60, //默认60秒
 				showText: true, //判断短信是否发送
-				account:'15014205686',
+				account:'',
 				phone: '', //手机号码
-				email:'809052487@qq.com', //邮箱号
+				email:'', //邮箱号
 				yzm: '' ,//验证码
-				pwd:'123456', //密码
+				pwd:'', //密码
 				loginType:'phone' //登录类型
 			};
 		},

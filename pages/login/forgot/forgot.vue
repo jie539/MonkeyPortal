@@ -47,16 +47,16 @@
 			return {
 				interval:null,
 				index:0,
-				picker: ['CN', 'CN-HK', 'CN-MO'],
-				areaCode: ['+86','852','853'],
+				picker: ['CN-HK', 'CN-MO'],
+				areaCode: ['852','853'],
 				title: 'Forgot Password?', //填写logo或者app名称，也可以用：欢迎回来，看您需求
 				second: 60, //默认60秒
 				showText: true, //判断短信是否发送
-				account:'13189416081',
+				account:'',
 				phone: '', //手机号码
 				email:'', //邮箱号
-				yzm: '123456' ,//验证码
-				pwd:'123456', //密码
+				yzm: '' ,//验证码
+				pwd:'', //密码
 				loginType:'phone' //登录类型
 			};
 		},
