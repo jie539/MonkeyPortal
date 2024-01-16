@@ -13,13 +13,13 @@ const user ={
 			uni.setStorageSync('studentName',name);
 		},
 		SET_USER_INFO(state, { userInfo }) {
-		    state.studentId = userInfo[0].student_id;
-		    state.studentName = userInfo[0].student_name;
+		    state.studentId = userInfo[0].studentId;
+		    state.studentName = userInfo[0].studentName;
 			state.studentInfo = userInfo;
 			state.expireTime = new Date().getTime() + 30 * 24 * 60 *10 * 1000;//过期时间30天
 			uni.setStorageSync('studentInfo',userInfo);
-			uni.setStorageSync('studentId',userInfo[0].student_id);
-			uni.setStorageSync('studentName',userInfo[0].student_name);
+			uni.setStorageSync('studentId',userInfo[0].studentId);
+			uni.setStorageSync('studentName',userInfo[0].studentName);
 			uni.setStorageSync('expireTime',state.expireTime);
 		},
 	},
@@ -28,7 +28,7 @@ const user ={
 		    const student = state.studentInfo[index];
 		    if (student) {
 		      // 调用 SET_STUDENT_INFO mutation，将学生信息设置到 state 中
-		      commit('SET_STUDENT_INFO', { id: student.student_id, name: student.student_name });
+		      commit('SET_STUDENT_INFO', { id: student.studentId, name: student.studentName });
 		    }
 		},	
 		setUserInfo({ commit,state }, userInfo){

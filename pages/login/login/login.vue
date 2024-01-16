@@ -1,6 +1,6 @@
 <!-- 蓝色简洁登录页面 -->
 <template>
-	<view class="t-login">
+	<view class="t-login" @keydown.enter="login()">
 		<!-- 页面装饰图片 -->
 		<image class="img-a" src="https://zhoukaiwen.com/img/loginImg/2.png"></image>
 		<!-- 标题 -->
@@ -15,7 +15,7 @@
 			<view class="t-a">
 				<image src="https://zhoukaiwen.com/img/loginImg/pwd.png"></image>
 				<view class="line"></view>
-				<input type="password" name="code" maxlength="16" placeholder="Please enter your password" v-model="pwd" />
+				<input type="password" name="code" maxlength="16" placeholder="Please enter your password" v-model="pwd"/>
 			</view>
 			<button @tap="login()">Login</button>
 			<view class="text-gray flex justify-between padding-lr-sm padding-top-sm">
@@ -88,6 +88,8 @@
 					uni.hideLoading();
 					if (res.data.code === 200) {					
 						const userInfo = res.data.studentInfo
+						console.log(userInfo);
+						uni.setStorageSync('token',res.data.token)
 						this.$store.dispatch('setUserInfo', userInfo);
 						uni.navigateTo({
 							url:'/',

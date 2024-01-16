@@ -181,7 +181,7 @@
 						color: 'cyan',
 						badge: 22,
 						mid: '4',
-						name: '文章资讯'
+						name: '聊天'
 					}
 				],
 				messageData: [{
@@ -280,9 +280,11 @@
 						url: '../../os_project/index'
 					});
 				} else if (e.currentTarget.dataset.mid == 4) {
-					this.$emit('ShowNews', 'news')
-					console.log('文章资讯')
-
+					// this.$emit('ShowNews', 'news')
+					// console.log('文章资讯')
+					uni.navigateTo({
+						url: '../../pages/chat/chat'
+					});
 				}
 			},
 			goProjectList() {

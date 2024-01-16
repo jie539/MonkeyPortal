@@ -166,6 +166,22 @@
 					"titleNView":false
 				}
 			}
+		},
+		{
+			"path" : "pages/chat/chat",
+			"style" : 
+			{
+				"navigationBarTitleText" : "chat",
+				"enablePullDownRefresh" : false
+			}
+		},
+		{
+			"path" : "pages/index/chatLIST/chatLIST",
+			"style" : 
+			{
+				"navigationBarTitleText" : "",
+				"enablePullDownRefresh" : false
+			}
 		}
 	],
 	"subPackages": [{

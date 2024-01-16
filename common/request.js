@@ -12,8 +12,8 @@ const httpRequest = (opts, data) => {
 	}else if(opts.type == 4){
 		baseUrl = 'http://localhost:8080/monkeytownHK/';
 	}else if(opts.type == 5){
-		//baseUrl = 'http://localhost:8085/';
-		baseUrl = 'https://appbackend.monkeytree.com.hk/';
+		baseUrl = 'http://localhost:8085/';
+		//baseUrl = 'https://appbackend.monkeytree.com.hk/';
 	}else{
 		baseUrl = 'https://api.zhoukaiwen.com/';
 	}

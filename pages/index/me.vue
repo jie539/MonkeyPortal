@@ -233,7 +233,7 @@
 					</view>
 				</view>
 				<view class="padding-xl " style="display: flex;flex-direction: column;">		
-					<button class="cu-btn round margin-top-xs" :class="{ 'bg-cyan': selectedIndex === index }" v-for="(item,index) in (studentInfo)" :key="index" @click="changeStudent(index)">{{item.first_name}}</button>
+					<button class="cu-btn round margin-top-xs" :class="{ 'bg-cyan': selectedIndex === index }" v-for="(item,index) in (studentInfo)" :key="index" @click="changeStudent(index)">{{item.firstName}}</button>
 				</view>
 				<view class="cu-bar bg-white justify-end">
 					<view class="action">
@@ -303,6 +303,7 @@
 </template>
 
 <script>
+	import request from '@/common/request.js';
 	var videoAd = null
 	export default {
 		data() {
@@ -393,6 +394,7 @@
 			}
 		},
 		created() {
+			console.log(this.$store.getters.studentInfo);
 		},
 		methods: {
 			confirm(){
@@ -476,10 +478,30 @@
 			// 	})
 			// }
 			GetLogin() {
-				uni.navigateTo({
-					url:"/pages/login/login/login"
-				})
-				uni.clearStorage()
+				let that = this;
+				const userInfo = {
+					token: uni.getStorageSync('token'),
+				}
+				
+				let opts = {
+					url: 'portal/logout',
+					method: 'post',
+					type :5
+				};
+				
+				uni.showLoading({
+					title: 'Loading!'
+				});
+				
+				request.httpRequest(opts,userInfo).then(res => {
+					uni.hideLoading();
+					if (res.data.code === 200) {					
+						uni.navigateTo({
+							url:"/pages/login/login/login"
+						})
+						uni.clearStorage()
+					}
+				});				
 			}
 		}
 	}
