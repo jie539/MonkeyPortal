@@ -1,10 +1,12 @@
 <template>
 	<view>
 		<index @ShowNews="ShowNews" v-if="PageCur=='index'"></index>
-		<chatList v-if="PageCur=='chatList'"></chatList>
+		<userList v-if="PageCur=='userList'"></userList>
 		<search v-if="PageCur=='search'"></search>
 		<cases v-if="PageCur=='cases'"></cases>
 		<news v-if="PageCur=='news'"></news>
+		<chatList v-if="PageCur=='chatList'"></chatList>
+		
 		<me v-if="PageCur=='me'"></me>
 		
 		<view class="box">
@@ -26,13 +28,13 @@
 					<view :class="PageCur=='search'?'color_main':'text-gray'">会员专区</view>
 				</view>
 				
-				<view class="action" @click="NavChange" data-cur="chatList">
+				<view class="action" @click="NavChange" data-cur="userList">
 					<view class='cuIcon-cu-image'>
 						<view class="cu-tag badge"><!-- 红点 --></view>
 						<image v-if="PageCur=='search'" src="../../static/tabBar/shop_cur.png"></image>
 						<image v-if="PageCur != 'search'" src="../../static/tabBar/shop.png"></image>
 					</view>
-					<view :class="PageCur=='search'?'color_main':'text-gray'">聊天列表</view>
+					<view :class="PageCur=='search'?'color_main':'text-gray'">用户列表</view>
 				</view>
 
 				<view @click="NavChange" class="action text-gray add-action" data-cur="cases">
@@ -40,7 +42,7 @@
 					<view :class="PageCur=='cases'?'color_main':'text-gray'">组件模板</view>
 				</view>
 
-				<view class="action" @click="NavChange" data-cur="news">
+				<view class="action" @click="NavChange" data-cur="news" v-if="false">
 					<view class='cuIcon-cu-image'>
 						<view class="cu-tag badge">{{message}}</view>
 						<image v-if="PageCur=='news'" src="../../static/tabBar/order_cur.png"></image>
@@ -49,6 +51,15 @@
 					<view :class="PageCur=='news'?'color_main':'text-gray'">文章资讯</view>
 				</view>
 
+				<view class="action" @click="NavChange" data-cur="chatList">
+					<view class='cuIcon-cu-image'>
+						<view class="cu-tag badge">{{message}}</view>
+						<image v-if="PageCur=='news'" src="../../static/tabBar/order_cur.png"></image>
+						<image v-if="PageCur != 'news'" src="../../static/tabBar/order.png"></image>
+					</view>
+					<view :class="PageCur=='news'?'color_main':'text-gray'">聊天列表</view>
+				</view>
+				
 				<view class="action" @click="NavChange" data-cur="me">
 					<view class='cuIcon-cu-image'>
 						<image v-if="PageCur=='me'" src="../../static/tabBar/me_cur.png"></image>
@@ -70,7 +81,9 @@
 	import cases from "./main.vue";	//宅家学
 	import news from "./news.vue";	//资讯
 	import me from "./me.vue";	//个人中心
-	import chatList from "./chatList.vue"
+	import userList from "./userList.vue" //好友列表
+	import chatList from "./chatList.vue" //聊天室
+	
 	export default {
 		components: {
 			index,
@@ -78,12 +91,13 @@
 			cases,
 			news,
 			me,
+			userList,
 			chatList
 		},
 		data() {
 			return {
 				PageCur: 'index',
-				message: '0',
+				message: '25',
 				openId:'',
 				access_token:'',
 				tip:"我是提示",
