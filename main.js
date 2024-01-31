@@ -25,7 +25,7 @@ const app = new Vue({
 	beforeMount() {
 	    // 模拟路由守卫逻辑，例如检查用户是否登录
 		const currentPath = this.$route.path;
-		
+		console.log("uview:"+this.$u.config.v);
 		const excludedPaths = [
 		  '/pages/login/login/login',
 		  '/pages/login/forgot/forgot',

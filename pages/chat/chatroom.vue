@@ -5,7 +5,7 @@
 				:scroll-with-animation="scrollAnimation" :scroll-top="scrollTop" :scroll-into-view="scrollToView"
 				@scrolltoupper="loadHistory" upper-threshold="50">
 				<!-- 加载历史数据waitingUI -->
-				<view class="loading">
+				<view class="loading" v-if="isHistoryLoading">
 					<view class="spinner">
 						<view class="rect1"></view>
 						<view class="rect2"></view>
@@ -32,11 +32,12 @@
 					<!-- 用户消息 -->
 					<block v-if="row.type=='user'">
 						<!-- 自己发出的消息 -->
-						<view class="my" v-if="row.msg.userinfo.uid==myuid">
+						<view class="my" v-if="row.msg.userinfo.uid==senderUid">
 							<!-- 左-消息 -->
 							<view class="left">
 								<!-- 文字消息 -->
 								<view v-if="row.msg.type=='text'" class="bubble">
+									<u-tooltip text="复制" overlay></u-tooltip>
 									<rich-text :nodes="row.msg.content.text"></rich-text>
 								</view>
 								<!-- 语言消息 -->
@@ -70,7 +71,7 @@
 							</view>
 						</view>
 						<!-- 别人发出的消息 -->
-						<view class="other" v-if="row.msg.userinfo.uid!=myuid">
+						<view class="other" v-if="row.msg.userinfo.uid!=senderUid">
 							<!-- 左-头像 -->
 							<view class="left">
 								<image :src="row.msg.userinfo.face"></image>
@@ -82,7 +83,7 @@
 									<view class="time">{{row.msg.time}}</view>
 								</view>
 								<!-- 文字消息 -->
-								<view v-if="row.msg.type=='text'" class="bubble">
+								<view v-if="row.msg.type=='text'" class="bubble">								
 									<rich-text :nodes="row.msg.content.text"></rich-text>
 								</view>
 								<!-- 语音消息 -->
@@ -210,7 +211,10 @@
 	</view>
 </template>
 <script>
+	import timeFormat from '@/common/timeFormat.js';
+	import request from '@/common/request.js';
 	import { onlineEmoji, emojiList } from '@/tn_components/chat/emojiData/emojiData.js';
+import { stdout } from 'process';
 	export default {
 		data() {
 			return {
@@ -223,8 +227,8 @@
 				scrollToView: '',
 				msgList: [],
 				msgImgList: [],
-				myuid: 0,
-
+				senderUid: 123,
+				receiverUid:456,
 				//录音相关参数
 				// #ifndef H5
 				//H5不能录音
@@ -282,6 +286,9 @@
 				this.recordEnd(e);
 			})
 			// #endif
+			uni.setNavigationBarTitle({
+				title:option.name
+			})
 		},
 		onShow() {
 			this.scrollTop = 9999999;
@@ -302,7 +309,7 @@
 							type: "redEnvelope",
 							time: nowDate.getHours() + ":" + nowDate.getMinutes(),
 							userinfo: {
-								uid: 0,
+								uid: 123,
 								username: "大黑哥",
 								face: "https://zhoukaiwen.com/img/kevinLogo.png"
 							},
@@ -352,7 +359,7 @@
 					}
 					console.log('用户消息');
 					//非自己的消息震动
-					if (msg.msg.userinfo.uid != this.myuid) {
+					if (msg.msg.userinfo.uid != this.senderUid) {
 						console.log('振动');
 						uni.vibrateLong();
 					}
@@ -365,6 +372,7 @@
 
 			//触发滑动到顶部(加载历史信息记录)
 			loadHistory(e) {
+				console.log('触顶');	
 				if (this.isHistoryLoading) {
 					return;
 				}
@@ -381,7 +389,7 @@
 								type: "text",
 								time: "12:56",
 								userinfo: {
-									uid: 0,
+									uid: 123,
 									username: "大黑哥",
 									face: "https://zhoukaiwen.com/img/kevinLogo.png"
 								},
@@ -430,7 +438,7 @@
 								type: "voice",
 								time: "13:05",
 								userinfo: {
-									uid: 0,
+									uid: 123,
 									username: "大黑哥",
 									face: "https://zhoukaiwen.com/img/kevinLogo.png"
 								},
@@ -466,7 +474,7 @@
 			// 加载初始页面消息
 			getMsgList() {
 				// 消息列表
-				let list = [{
+				/* let list = [{
 						type: "system",
 						msg: {
 							id: 0,
@@ -483,7 +491,7 @@
 							type: "text",
 							time: "12:56",
 							userinfo: {
-								uid: 0,
+								uid: 123,
 								username: "大黑哥",
 								face: "https://zhoukaiwen.com/img/kevinLogo.png"
 							},
@@ -532,7 +540,7 @@
 							type: "voice",
 							time: "13:05",
 							userinfo: {
-								uid: 0,
+								uid: 123,
 								username: "大黑哥",
 								face: "https://zhoukaiwen.com/img/kevinLogo.png"
 							},
@@ -549,7 +557,7 @@
 							type: "img",
 							time: "13:05",
 							userinfo: {
-								uid: 0,
+								uid: 123,
 								username: "大黑哥",
 								face: "https://zhoukaiwen.com/img/kevinLogo.png"
 							},
@@ -606,7 +614,7 @@
 							type: "redEnvelope",
 							time: "12:56",
 							userinfo: {
-								uid: 0,
+								uid: 123,
 								username: "大黑哥",
 								face: "https://zhoukaiwen.com/img/kevinLogo.png"
 							},
@@ -635,24 +643,68 @@
 							}
 						}
 					},
-				]
-				// 获取消息中的图片,并处理显示尺寸
-				for (let i = 0; i < list.length; i++) {
-					if (list[i].type == 'user' && list[i].msg.type == "img") {
-						list[i].msg.content = this.setPicSize(list[i].msg.content);
-						this.msgImgList.push(list[i].msg.content.url);
-					}
+				] */
+				
+				let list=[]
+				let opts = {
+					url: 'chatMessage/getChatList',
+					method: 'post',
+					type :5
+				};
+				
+				let userIds = {
+					senderUid: this.senderUid,
+					receiverUid: this.receiverUid
 				}
-				this.msgList = list;
-				// 滚动到底部
-				this.$nextTick(function() {
-					//进入页面滚动到底部
-					this.scrollTop = 9999;
-					this.$nextTick(function() {
-						this.scrollAnimation = true;
-					});
-
+				
+				uni.showLoading({
+					title: '加载中!'
 				});
+				request.httpRequest(opts,userIds).then(res => {
+					uni.hideLoading();
+					if (res.data.code == 200) {					
+						list = res.data.chatMessage.userMessages
+						
+						// 获取消息中的图片,并处理显示尺寸
+						for (let i = 0; i < list.length; i++) {
+							if (list[i].type == 'user' && list[i].msg.type == "img") {
+								list[i].msg.content = this.setPicSize(list[i].msg.content);
+								this.msgImgList.push(list[i].msg.content.url);
+							}
+						}
+						this.msgList = list;
+						// 滚动到底部
+						this.$nextTick(function() {
+							//进入页面滚动到底部
+							this.scrollTop = 9999;
+							this.$nextTick(function() {
+								this.scrollAnimation = true;
+								this.isHistoryLoading = false;
+							});
+						
+						});
+					} else {
+						console.log('error!');
+					}
+				});
+					
+				// // 获取消息中的图片,并处理显示尺寸
+				// for (let i = 0; i < list.length; i++) {
+				// 	if (list[i].type == 'user' && list[i].msg.type == "img") {
+				// 		list[i].msg.content = this.setPicSize(list[i].msg.content);
+				// 		this.msgImgList.push(list[i].msg.content.url);
+				// 	}
+				// }
+				// this.msgList = list;
+				// // 滚动到底部
+				// this.$nextTick(function() {
+				// 	//进入页面滚动到底部
+				// 	this.scrollTop = 9999;
+				// 	this.$nextTick(function() {
+				// 		this.scrollAnimation = true;
+				// 	});
+
+				// });
 			},
 			//处理图片尺寸，如果不处理宽高，新进入页面加载图片时候会闪
 			setPicSize(content) {
@@ -801,16 +853,35 @@
 					type: 'user',
 					msg: {
 						id: lastid,
-						time: nowDate.getHours() + ":" + nowDate.getMinutes(),
+						time: timeFormat( nowDate, 'YYYY-MM-DD HH:mm:ss'),
 						type: type,
 						userinfo: {
-							uid: 0,
+							uid: 123,
 							username: "大黑哥",
 							face: "https://zhoukaiwen.com/img/kevinLogo.png"
 						},
 						content: content
 					}
 				}
+				//向服务器发送信息
+				let opts = {
+					url: `chatMessage/insertChatMessage?receiverUid=${this.receiverUid}`,
+					method: 'post',
+					type :5
+				};
+				
+				uni.showLoading({
+					title: '加载中!'
+				});
+				request.httpRequest(opts,msg).then(res => {
+					uni.hideLoading();
+					if (res.data.code == 200) {					
+						console.log(res.data);
+					} else {
+						console.log('error!');
+					}
+				});
+				
 				// 发送消息
 				this.screenMsg(msg);
 				// 定时器模拟对方回复,三秒
@@ -890,7 +961,7 @@
 						if (!msg.content.isReceived) {
 							// {type:"system",msg:{id:8,type:"redEnvelope",content:{text:"你领取了售后客服008的红包"}}},
 							this.sendSystemMsg({
-								text: "你领取了" + (msg.userinfo.uid == this.myuid ? "自己" : msg.userinfo
+								text: "你领取了" + (msg.userinfo.uid == this.senderUid ? "自己" : msg.userinfo
 									.username) + "的红包"
 							}, 'redEnvelope');
 							console.log("this.msgList[index]: " + JSON.stringify(this.msgList[index]));

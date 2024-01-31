@@ -89,6 +89,7 @@
 					if (res.data.code === 200) {					
 						const userInfo = res.data.studentInfo
 						console.log(userInfo);
+						uni.setStorageSync('guardianId',res.data.guardianId)
 						uni.setStorageSync('token',res.data.token)
 						this.$store.dispatch('setUserInfo', userInfo);
 						uni.navigateTo({

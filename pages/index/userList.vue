@@ -1,11 +1,12 @@
 <template>
 	<view>
 		<cu-custom bgColor="bg-gradual-blue" :isBack="false">
-			<block slot="content">聊天列表</block>
+			<block slot="content">用户列表</block>
 		</cu-custom>
 		<view class="page-main">
 		    <liu-indexed-list :dataList="dataList" @click="click"></liu-indexed-list>
 		</view>
+		<cu-custom/>
 	</view>
 </template>
 
@@ -92,5 +93,7 @@
 </script>
 
 <style lang="scss" scoped>
-	
+	.bottom{
+		margin-bottom: 100upx;
+	}
 </style>
