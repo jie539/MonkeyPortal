@@ -36,9 +36,16 @@
 							<!-- 左-消息 -->
 							<view class="left">
 								<!-- 文字消息 -->
-								<view v-if="row.msg.type=='text'" class="bubble">
-									<u-tooltip text="复制" overlay></u-tooltip>
+								<view v-if="row.msg.type=='text'" class="bubble" @contextmenu.prevent="rightClickHandler">
+									<uv-tooltip
+										:buttons="button"
+										@click="bubbleEvent"
+										:showCopy="true"
+										:isSlot="true"
+										:id="row.msg.id"
+									>
 									<rich-text :nodes="row.msg.content.text"></rich-text>
+									</uv-tooltip>	
 								</view>
 								<!-- 语言消息 -->
 								<view v-if="row.msg.type=='voice'" class="bubble voice" @tap="playVoice(row.msg)"
@@ -214,10 +221,13 @@
 	import timeFormat from '@/common/timeFormat.js';
 	import request from '@/common/request.js';
 	import { onlineEmoji, emojiList } from '@/tn_components/chat/emojiData/emojiData.js';
-import { stdout } from 'process';
+	import { stdout } from 'process';
 	export default {
 		data() {
 			return {
+				text:'删除',
+				button:['扩展'],
+				testMsg:`<uv-tooltip :text='123' :buttons="button" @click="bubbleEvent" :showCopy="true" :id="row.msg.id"></uv-tooltip>`,
 				//文字消息
 				textMsg: '',
 				//消息列表
@@ -328,6 +338,12 @@ import { stdout } from 'process';
 			});
 		},
 		methods: {
+			rightClickHandler(event) {
+			    event.preventDefault(); // 阻止默认的右键事件
+			},
+			bubbleEvent(e,p){
+				console.log(e,p);
+			},
 			// 接受消息(筛选处理)
 			screenMsg(msg) {
 				//从长连接处转发给这个方法，进行筛选处理
@@ -474,176 +490,6 @@ import { stdout } from 'process';
 			// 加载初始页面消息
 			getMsgList() {
 				// 消息列表
-				/* let list = [{
-						type: "system",
-						msg: {
-							id: 0,
-							type: "text",
-							content: {
-								text: "欢迎进入Kevin聊天室"
-							}
-						}
-					},
-					{
-						type: "user",
-						msg: {
-							id: 1,
-							type: "text",
-							time: "12:56",
-							userinfo: {
-								uid: 123,
-								username: "大黑哥",
-								face: "https://zhoukaiwen.com/img/kevinLogo.png"
-							},
-							content: {
-								text: "web前端开发该怎么学习？"
-							}
-						}
-					},
-					{
-						type: "user",
-						msg: {
-							id: 2,
-							type: "text",
-							time: "12:57",
-							userinfo: {
-								uid: 1,
-								username: "售后客服008",
-								face: "https://zhoukaiwen.com/img/qdpz/face/face_2.jpg"
-							},
-							content: {
-								text: "按照基本路线，从html、css、js三大基础开始，然后ajax、vue进阶学习，最后学习小程序、node、react。"
-							}
-						}
-					},
-					{
-						type: "user",
-						msg: {
-							id: 3,
-							type: "voice",
-							time: "12:59",
-							userinfo: {
-								uid: 1,
-								username: "售后客服008",
-								face: "https://zhoukaiwen.com/img/qdpz/face/face_2.jpg"
-							},
-							content: {
-								url: "/static/voice/1.mp3",
-								length: "00:06"
-							}
-						}
-					},
-					{
-						type: "user",
-						msg: {
-							id: 4,
-							type: "voice",
-							time: "13:05",
-							userinfo: {
-								uid: 123,
-								username: "大黑哥",
-								face: "https://zhoukaiwen.com/img/kevinLogo.png"
-							},
-							content: {
-								url: "/static/voice/2.mp3",
-								length: "00:06"
-							}
-						}
-					},
-					{
-						type: "user",
-						msg: {
-							id: 5,
-							type: "img",
-							time: "13:05",
-							userinfo: {
-								uid: 123,
-								username: "大黑哥",
-								face: "https://zhoukaiwen.com/img/kevinLogo.png"
-							},
-							content: {
-								url: "https://zhoukaiwen.com/img/Design/logo/psketch3.png",
-								w: 200,
-								h: 200
-							}
-						}
-					},
-					{
-						type: "user",
-						msg: {
-							id: 6,
-							type: "img",
-							time: "12:59",
-							userinfo: {
-								uid: 1,
-								username: "售后客服008",
-								face: "https://zhoukaiwen.com/img/qdpz/face/face_2.jpg"
-							},
-							content: {
-								url: "https://zhoukaiwen.com/img/Design/pc/ybss_jt.png",
-								w: 1920,
-								h: 1080
-							}
-						}
-					},
-					{
-						type: "system",
-						msg: {
-							id: 7,
-							type: "text",
-							content: {
-								text: "欢迎进入Kevin聊天室"
-							}
-						}
-					},
-
-					{
-						type: "system",
-						msg: {
-							id: 9,
-							type: "redEnvelope",
-							content: {
-								text: "售后客服008领取了你的红包"
-							}
-						}
-					},
-					{
-						type: "user",
-						msg: {
-							id: 10,
-							type: "redEnvelope",
-							time: "12:56",
-							userinfo: {
-								uid: 123,
-								username: "大黑哥",
-								face: "https://zhoukaiwen.com/img/kevinLogo.png"
-							},
-							content: {
-								blessing: "恭喜发财，大吉大利，万事如意",
-								rid: 0,
-								isReceived: false
-							}
-						}
-					},
-					{
-						type: "user",
-						msg: {
-							id: 11,
-							type: "redEnvelope",
-							time: "12:56",
-							userinfo: {
-								uid: 1,
-								username: "售后客服008",
-								face: "https://zhoukaiwen.com/img/qdpz/face/face_2.jpg"
-							},
-							content: {
-								blessing: "恭喜发财",
-								rid: 1,
-								isReceived: false
-							}
-						}
-					},
-				] */
 				
 				let list=[]
 				let opts = {
