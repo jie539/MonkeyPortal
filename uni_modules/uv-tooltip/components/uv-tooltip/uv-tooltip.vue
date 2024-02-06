@@ -325,23 +325,25 @@
 	.uv-tooltip {
 		position: relative;
 		@include flex;
-
+		width: 100%;
 		&__wrapper {
 			@include flex;
 			justify-content: center;
+			width: 100%;
 			/* #ifndef APP-NVUE */
-			white-space: nowrap;
+			white-space: normal;
 			/* #endif */
 
 			&__text {
 				//font-size: 14px;
 				font-size: 32rpx;
+				width: 100%;
 			}
 
 			&__popup {
 				@include flex;
 				justify-content: center;
-
+				white-space: nowrap;
 				&__list {
 					background-color: #060607;
 					position: relative;

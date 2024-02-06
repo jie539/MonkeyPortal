@@ -46,6 +46,11 @@ const app = new Vue({
 			 this.$store.state.user.studentId = uni.getStorageSync('studentId');
 			 this.$store.state.user.studentName = uni.getStorageSync('studentName');	
 		}
+		console.log(this.$store.getters.guardianId);
+		if(this.$store.getters.guardianId==''){
+			this.$store.dispatch('setGuardianId', uni.getStorageSync('guardianId'));		
+		}
+		console.log(sessionStorage.setItem('userID',123));		
 	},
 })
 app.$mount()

@@ -44,8 +44,10 @@
 										:isSlot="true"
 										:id="row.msg.id"
 									>
+									<!-- <rich-text :nodes="row.msg.content.text"></rich-text> -->
 									<rich-text :nodes="row.msg.content.text"></rich-text>
-									</uv-tooltip>	
+									</uv-tooltip>
+									<!-- <view v-html="testMsg"></view> -->
 								</view>
 								<!-- 语言消息 -->
 								<view v-if="row.msg.type=='voice'" class="bubble voice" @tap="playVoice(row.msg)"
@@ -226,8 +228,9 @@
 		data() {
 			return {
 				text:'删除',
-				button:['扩展'],
-				testMsg:`<uv-tooltip :text='123' :buttons="button" @click="bubbleEvent" :showCopy="true" :id="row.msg.id"></uv-tooltip>`,
+				button:['撤回'],
+				testMsg:`<div><uv-tooltix :buttons="button" @click="bubbleEvent" :showCopy="true" :isSlot="true" :id="row.msg.id"><rich-text nodes="123">123</rich-text></uv-tooltip></div>`,
+				testMsg2:`<div style="text-align:center;background-color: #007AFF;"><div >我是内容</div><img src="https://qiniu-web-assets.dcloud.net.cn/unidoc/zh/uni@2x.png"/></div>`,					
 				//文字消息
 				textMsg: '',
 				//消息列表
@@ -237,8 +240,10 @@
 				scrollToView: '',
 				msgList: [],
 				msgImgList: [],
-				senderUid: 123,
+				senderUid: this.$store.getters.guardianId,
 				receiverUid:456,
+				receiverFace:'',
+				receiverName:'',
 				//录音相关参数
 				// #ifndef H5
 				//H5不能录音
@@ -281,6 +286,10 @@
 			};
 		},
 		onLoad(option) {
+			this.init();
+			this.receiverUid = parseInt(option.guardianId);
+			this.receiverFace = option.url;
+			this.receiverName = option.name;
 			this.getMsgList();
 			//语音自然播放结束
 			this.AUDIO.onEnded((res) => {
@@ -297,8 +306,12 @@
 			})
 			// #endif
 			uni.setNavigationBarTitle({
-				title:option.name
+				title:option.name,				
 			})
+		},
+		onBackPress(options) {
+			console.log('返回');
+			this.disconnectWebSocket();
 		},
 		onShow() {
 			this.scrollTop = 9999999;
@@ -341,8 +354,22 @@
 			rightClickHandler(event) {
 			    event.preventDefault(); // 阻止默认的右键事件
 			},
-			bubbleEvent(e,p){
-				console.log(e,p);
+			bubbleEvent(e,msgId){
+				const index = this.msgList.findIndex(message => message.msg.id === msgId);
+				const desiredMessage = this.msgList[index];
+				const newMessage = {
+					type: "system",
+					msg: {
+						id: 0,
+						type: "text",
+						content:{
+							text:"已撤销"
+						}
+					}
+				};
+				
+				// 将找到的对象替换为新对象
+				this.$set(this.msgList, index, newMessage);
 			},
 			// 接受消息(筛选处理)
 			screenMsg(msg) {
@@ -493,7 +520,7 @@
 				
 				let list=[]
 				let opts = {
-					url: 'chatMessage/getChatList',
+					url: 'chatMessage/getChatHistory',
 					method: 'post',
 					type :5
 				};
@@ -649,6 +676,61 @@
 					this.hideDrawer();
 				}
 			},
+			async init(){
+				let that = this;
+				// 初始化 WebSocket 连接
+				this.ws = new WebSocket('ws://localhost:8085/chat');
+			
+				// WebSocket 连接成功时的回调
+				this.ws.onopen = function (event) {
+					console.log(that.senderUid);	
+					that.ws.send(JSON.stringify({ action: 'setUserId', userId: that.senderUid }));
+					
+					console.log('WebSocket 连接已打开');
+					// 这里可以添加其他逻辑，例如发送欢迎消息等
+				};
+			
+				// 接收到消息时的回调
+				this.ws.onmessage = function (event) {
+					console.log('收到消息:');
+					console.log(event.data);
+					that.screenMsg(JSON.parse(event.data));
+					//that.getMsg = event.data;
+					// 处理接收到的消息，可以根据需要进行操作
+				};
+			
+				// WebSocket 连接关闭时的回调
+				this.ws.onclose = function (event) {
+					console.log('WebSocket 连接已关闭', event);
+			
+					// 如果需要自动重连，可以在这里添加重连逻辑
+					// 例如，重新调用 init() 方法
+			
+					// 注意：在生产环境中，要注意控制重连频率，避免过于频繁的重连
+				};
+				this.ws.onerror = (error) => {
+				  console.error('WebSocket 连接发生错误:', error);
+				};
+			},
+			disconnectWebSocket() {
+			    if (this.ws) {
+			        // 关闭 WebSocket 连接
+			        //this.ws.close();
+					this.ws.send(JSON.stringify({ action: 'removeUserId', userId: this.senderUid }));
+			        console.log('WebSocket 连接已断开');
+			    } else {
+			        console.log('WebSocket 连接不存在');
+			    }
+			},
+			send(msg){
+				//this.ws.send(this.sendMsg);
+				var messageObject = {
+				        action: 'sendMessageToUser',
+				        userId: this.receiverUid,
+				        message: msg
+				};
+				this.ws.send(JSON.stringify(messageObject));
+			},
 			// 发送文字消息
 			sendText() {
 				this.hideDrawer(); //隐藏抽屉
@@ -686,7 +768,7 @@
 						}
 					}
 				});
-				return '<div style="display: flex;align-items: center;word-wrap:break-word;">' + replacedStr + '</div>';
+				return '<div style="display: flex;align-items: center;flex-wrap: wrap;">' + replacedStr + '</div>';
 			},
 
 			// 发送消息
@@ -695,6 +777,16 @@
 				var nowDate = new Date();
 				let lastid = this.msgList[this.msgList.length - 1].msg.id;
 				lastid++;
+				let face;
+				let name;
+				console.log(this.senderUid);
+				if(this.senderUid === 105766){
+					name = '大黑哥';
+					face = 'https://zhoukaiwen.com/img/kevinLogo.png';
+				}else{
+					name = '小红姐';
+					face = 'https://zhoukaiwen.com/img/qdpz/face/face_2.jpg';
+				}
 				let msg = {
 					type: 'user',
 					msg: {
@@ -702,9 +794,9 @@
 						time: timeFormat( nowDate, 'YYYY-MM-DD HH:mm:ss'),
 						type: type,
 						userinfo: {
-							uid: 123,
-							username: "大黑哥",
-							face: "https://zhoukaiwen.com/img/kevinLogo.png"
+							uid: this.senderUid,
+							username: name,
+							face: face
 						},
 						content: content
 					}
@@ -730,27 +822,28 @@
 				
 				// 发送消息
 				this.screenMsg(msg);
+				this.send(msg)
 				// 定时器模拟对方回复,三秒
-				setTimeout(() => {
-					lastid = this.msgList[this.msgList.length - 1].msg.id;
-					lastid++;
-					msg = {
-						type: 'user',
-						msg: {
-							id: lastid,
-							time: nowDate.getHours() + ":" + nowDate.getMinutes(),
-							type: type,
-							userinfo: {
-								uid: 1,
-								username: "售后客服008",
-								face: "https://zhoukaiwen.com/img/qdpz/face/face_2.jpg"
-							},
-							content: content
-						}
-					}
-					// 本地模拟发送消息
-					this.screenMsg(msg);
-				}, 3000)
+				// setTimeout(() => {
+				// 	lastid = this.msgList[this.msgList.length - 1].msg.id;
+				// 	lastid++;
+				// 	msg = {
+				// 		type: 'user',
+				// 		msg: {
+				// 			id: lastid,
+				// 			time: nowDate.getHours() + ":" + nowDate.getMinutes(),
+				// 			type: type,
+				// 			userinfo: {
+				// 				uid: 1,
+				// 				username: "售后客服008",
+				// 				face: "https://zhoukaiwen.com/img/qdpz/face/face_2.jpg"
+				// 			},
+				// 			content: content
+				// 		}
+				// 	}
+				// 	// 本地模拟发送消息
+				// 	this.screenMsg(msg);
+				// }, 3000)
 			},
 
 			// 添加文字消息到列表

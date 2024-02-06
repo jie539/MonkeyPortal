@@ -5,12 +5,12 @@
 		</cu-custom>
 <!-- 		<view class="cu-item" :class="{ 'move-cur': modalName === 'move-box-' + index, 'bottom': index === chatRecords.length - 1+10 }" v-for="(item, index) in chatRecords" :key="index" -->
 		<view class="cu-item" :class="modalName=='move-box-'+ index?'move-cur':''" v-for="(item,index) in chatRecords" :key="index"  
-		  @touchstart="ListTouchStart" @touchmove="ListTouchMove" @touchend="ListTouchEnd" @tap="ListListTouch" :data-target="'move-box-' + index">
+		  @touchstart="ListTouchStart" @touchmove="ListTouchMove" @touchend="ListTouchEnd" @tap="ListListTouch(item)" :data-target="'move-box-' + index">
 		  <view class="cu-avatar round lg" :style="{ backgroundImage: 'url(' + item.avatar + ')' }"></view>
 		  <view class="content">
 			<view class="text-grey">{{ item.senderName }}</view>
 			<view class="text-gray text-sm">
-			  <text class="cuIcon-infofill text-red margin-right-xs" v-if="!item.isSuccess"></text> {{ item.message }}
+			  <text class="cuIcon-infofill text-red margin-right-xs" v-if="!item.isSuccess"></text><rich-text style="display: contents;" :nodes="item.message"></rich-text>
 			</view>
 		  </view>
 		  <view class="action">
@@ -27,6 +27,7 @@
 </template>
 
 <script>
+	import request from '@/common/request.js';
 	export default {
 		data() {
 			return {
@@ -141,7 +142,47 @@
 				]
 			}
 		},
+		onLoad() {
+			this.getChatList();
+			console.log("onload");
+		},
+		created() {
+			this.getChatList();
+			console.log("created");
+		},
 		methods: {
+			getChatList(){
+				let opts = {
+					url: 'chatMessage/getChatList?receiverUid='+this.$store.getters.guardianId,
+					method: 'post',
+					type :5
+				};
+				
+				uni.showLoading({
+					title: '加载中!'
+				});
+				request.httpRequest(opts).then(res => {
+					uni.hideLoading();
+					if (res.data.code == 200) {					
+						console.log(res.data.chatMessage);
+						const items = res.data.chatMessage.map(message => {
+						    return {
+						        avatar: message.face,
+						        senderName: message.username,
+						        message: message.text,
+						        timestamp: message.sendTime.split(' ')[1], // 提取时间部分
+						        unreadCount: message.unreadNum,
+								guardianId:message.uid,
+						        isSuccess: true // 这里没有原始数据中的字段，我假设为 true
+						    };
+						});	
+						console.log(items);
+						this.chatRecords.push(...items);
+					} else {
+						console.log('error!');
+					}
+				});
+			},
 			deleteItem(index){
 				this.chatRecords.splice(index, 1);
 			},
@@ -149,19 +190,18 @@
 				const selectedRecord = this.chatRecords.splice(index, 1)[0];
 				this.chatRecords.unshift(selectedRecord);
 			},
-			ListListTouch(e){
+			ListListTouch(item){
 				  // 获取点击的元素
 				  const targetElement = event.currentTarget;
 			
 				  // 通过操作 DOM 获取相应的值
 				  const name = targetElement.querySelector('.text-grey').textContent;
 				  const url = targetElement.querySelector('.cu-avatar').style.backgroundImage;
-			
 				  // 输出获取到的值
 				  console.log('Name:', name);
 				  console.log('URL:', url);
 				  uni.navigateTo({
-				  	url:'/pages/chat/chatroom?url='+url+'&name='+name,
+				  	url:'/pages/chat/chatroom?url='+item.avatar+'&name='+name+'&guardianId='+item.guardianId,
 				  })
 			},
 			// ListTouch触摸开始，获取触摸点距盒子左侧的距离
