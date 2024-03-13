@@ -80,7 +80,7 @@
 				console.log('back');
 				//uni.navigateBack();
 				uni.navigateTo({
-					url:'/'
+					url:'/pages/index/tabbar'
 				})
 			}
 		}

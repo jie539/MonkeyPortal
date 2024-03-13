@@ -297,7 +297,7 @@
 			},
 			ListListTouch(item){
 				  // 获取点击的元素
-				  const targetElement = event.currentTarget;
+				  //const targetElement = event.currentTarget;
 			
 				  // 通过操作 DOM 获取相应的值
 				  //const name = targetElement.querySelector('.text-grey').textContent;

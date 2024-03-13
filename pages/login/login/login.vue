@@ -93,6 +93,7 @@
 						this.$store.dispatch('setUserInfo', userInfo);
 						this.$store.dispatch('setGuardianId', res.data.guardianId);
 						this.$store.dispatch('setGuardianName', res.data.guardianName);
+						console.log(this.$store.getters.lang);
 						uni.navigateTo({
 							url:'/pages/index/tabbar',
 						})

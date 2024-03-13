@@ -6,10 +6,12 @@
 				<view class="monster">
 					<view class="monster__face">
 						<view class="monster__eye avatar-eye avatar-eye--green eye--left">
-							<view class="avatar-eye-pupil pupil--green"><span class="avatar-eye-pupil-blackThing"><span class="avatar-eye-pupil-lightReflection"></span></span></view>
+							<view class="avatar-eye-pupil pupil--green"><span class="avatar-eye-pupil-blackThing"><span
+										class="avatar-eye-pupil-lightReflection"></span></span></view>
 						</view>
 						<view class="monster__eye avatar-eye avatar-eye--violet eye--right">
-							<view class="avatar-eye-pupil pupil--pink"><span class="avatar-eye-pupil-blackThing"><span class="avatar-eye-pupil-lightReflection"></span></span></view>
+							<view class="avatar-eye-pupil pupil--pink"><span class="avatar-eye-pupil-blackThing"><span
+										class="avatar-eye-pupil-lightReflection"></span></span></view>
 						</view>
 						<view class="monster__noses">
 							<view class="monster__nose"></view>
@@ -23,14 +25,15 @@
 				</view>
 			</view>
 		</button>
-		
+
 		<!-- 弹窗确认 -->
 		<view class="cu-modal" :class="modalName=='Modal'?'show':''">
 			<view class="cu-dialog" style="padding: 300rpx 0 70rpx;">
 				<view class="modal_bg"></view>
 				<view class="modal_main">
 					<view class='nav-list margin-top'>
-						<view :class="'nav-li bg-zt' + (index+1)" v-for="(item, index) in inter" :key="index" @click="switchImage(index,item.name)">
+						<view :class="'nav-li bg-zt' + (index+1)" v-for="(item, index) in inter" :key="index"
+							@click="switchImage(index,item.name)">
 							<view class="nav-name">{{item.name}}</view>
 						</view>
 					</view>
@@ -64,8 +67,9 @@
 				</view>
 			</block>
 
-			<image src='https://cdn.nlark.com/yuque/0/2019/gif/280373/1570670848649-assets/web-upload/3dbaa72a-062b-470f-9b9d-058ff8f85ab8.gif'
-			 mode='scaleToFill' class='gif-wave'></image>
+			<image
+				src='https://cdn.nlark.com/yuque/0/2019/gif/280373/1570670848649-assets/web-upload/3dbaa72a-062b-470f-9b9d-058ff8f85ab8.gif'
+				mode='scaleToFill' class='gif-wave'></image>
 		</view>
 
 		<block>
@@ -73,22 +77,25 @@
 				<view class='flex flex-sub flex-direction solid-right'>
 					<view class="text-xxl text-orange">35.6k+</view>
 					<view class="margin-top-sm">
-						<text class='cuIcon-hot'></text> {{$t('me.visitor')}}</view>
+						<text class='cuIcon-hot'></text> {{$t('me.visitor')}}
+					</view>
 				</view>
 				<view class='flex flex-sub flex-direction solid-right'>
 					<view class="text-xxl text-blue">15.6k</view>
 					<view class="margin-top-sm">
-						<text class='cuIcon-share'></text> {{$t('me.share')}}</view>
+						<text class='cuIcon-share'></text> {{$t('me.share')}}
+					</view>
 				</view>
 				<view class='flex flex-sub flex-direction'>
 					<view class="text-xxl text-red">5.5k+</view>
 					<view class="margin-top-sm">
-						<text class='cuIcon-like'></text> {{$t('me.like')}}</view>
+						<text class='cuIcon-like'></text> {{$t('me.like')}}
+					</view>
 				</view>
 			</view>
-			
-			
-			
+
+
+
 			<view class="cu-list menu card-menu margin-top-lg shadow-shop bg-white text-black my-radius sm-border">
 				<view class="cu-item" @tap="showModal" data-target="Modal">
 					<view class='content'>
@@ -135,14 +142,14 @@
 						<text class="text-grey text-sm">共4款</text>
 					</view>
 				</view> -->
-				
+
 				<view class="cu-item">
 					<button class='content cu-btn' open-type="share">
 						<image src='../../static/me/icon/lvhang.png' class='png' mode='aspectFit'></image>
 						<text class='text-lg margin-sm'>{{$t('me.shareMiniProgram')}}</text>
 					</button>
 				</view>
-				
+
 				<!-- <view class="cu-item" @click="playVideo">
 					<button class='content cu-btn'>
 						<image src='../../static/me/icon/shouji.png' class='png' mode='aspectFit'></image>
@@ -153,16 +160,17 @@
 						<text class="text-xs text-grey">看看广告就很感谢啦～</text>
 					</view>
 				</view> -->
-				
+
 				<view class="cu-item">
 					<button class='content cu-btn' @tap="showGitee" data-target="ModalGitee">
-						<image style="border-radius: 50rpx;" src='https://zhoukaiwen.com/img/icon/gitee_logo.jpeg' class='png' mode='aspectFit'></image>
+						<image style="border-radius: 50rpx;" src='https://zhoukaiwen.com/img/icon/gitee_logo.jpeg'
+							class='png' mode='aspectFit'></image>
 						<text class='text-lg margin-sm'>{{$t('me.downloadMiniProgramSourceCode')}}</text>
 					</button>
 				</view>
 
 			</view>
-			
+
 
 			<view class="cu-list menu card-menu margin-bottom-lg shadow-shop bg-white text-black my-radius sm-border">
 
@@ -195,7 +203,6 @@
 						<view class="cu-tag round bg-blue light">186 2959 1093</view>
 					</view>
 				</view>
-
 				<view class="cu-item">
 					<button class='content cu-btn' open-type="feedback">
 						<image src='../../static/me/icon/chucuo.png' class='png' mode='aspectFit'></image>
@@ -203,19 +210,13 @@
 					</button>
 				</view>
 				<view class="cu-item">
-					<button class='content cu-btn' @click="goAboutMe">
-						<image src='../../static/me/icon/xiaoxi.png' class='png' mode='aspectFit'></image>
-						<text class='text-lg margin-sm'>{{$t('me.aboutAuthor')}}</text>
-					</button>
-				</view>
-				<view class="cu-item">
-					<button class='content cu-btn' open-type="feedback" @tap="showStudent" data-target="DialogModal1">
+					<button class='content cu-btn' @tap="showStudent" data-target="DialogModal1">
 						<image src='../../static/me/icon/chucuo.png' class='png' mode='aspectFit'></image>
 						<text class='text-lg margin-sm'>{{$t('me.switchRole')}}</text>
 					</button>
 				</view>
 				<view class="cu-item">
-					<button class='content cu-btn' open-type="feedback" @tap="showLang" data-target="DialogModal2">
+					<button class='content cu-btn' @tap="showLang" data-target="DialogModal2">
 						<image src='../../static/me/icon/chucuo.png' class='png' mode='aspectFit'></image>
 						<text class='text-lg margin-sm'>{{$t('me.language')}}</text>
 					</button>
@@ -223,7 +224,7 @@
 			</view>
 
 		</block>
-		
+
 		<view class="cu-modal" :class="modalName=='DialogModal1'?'show':''">
 			<view class="cu-dialog">
 				<view class="cu-bar bg-white justify-end">
@@ -232,8 +233,10 @@
 						<text class="cuIcon-close text-red"></text>
 					</view>
 				</view>
-				<view class="padding-xl " style="display: flex;flex-direction: column;">		
-					<button class="cu-btn round margin-top-xs" :class="{ 'bg-cyan': selectedIndex === index }" v-for="(item,index) in (studentInfo)" :key="index" @click="changeStudent(index)">{{item.firstName}}</button>
+				<view class="padding-xl " style="display: flex;flex-direction: column;">
+					<button class="cu-btn round margin-top-xs" :class="{ 'bg-cyan': selectedIndex === index }"
+						v-for="(item,index) in (studentInfo)" :key="index"
+						@click="changeStudent(index)">{{item.firstName}}</button>
 				</view>
 				<view class="cu-bar bg-white justify-end">
 					<view class="action">
@@ -243,7 +246,7 @@
 				</view>
 			</view>
 		</view>
-			
+
 		<view class="cu-modal" :class="modalName=='DialogModal2'?'show':''">
 			<view class="cu-dialog">
 				<view class="cu-bar bg-white justify-end">
@@ -252,8 +255,9 @@
 						<text class="cuIcon-close text-red"></text>
 					</view>
 				</view>
-				<view class="padding-xl " style="display: flex;flex-direction: column;">		
-					<button class="cu-btn round margin-top-xs" :class="{ 'bg-cyan': selectedIndexLang === index }" v-for="(item,index) in (getLang)" :key="index" @click="changeLang(index)">{{item}}</button>
+				<view class="padding-xl " style="display: flex;flex-direction: column;">
+					<button class="cu-btn round margin-top-xs" :class="{ 'bg-cyan': selectedIndexLang === index }"
+						v-for="(item,index) in (getLang)" :key="index" @click="changeLang(index)">{{item}}</button>
 				</view>
 				<view class="cu-bar bg-white justify-end">
 					<view class="action">
@@ -263,13 +267,13 @@
 				</view>
 			</view>
 		</view>
-			
+
 		<view class="login-out">
 			<button class='content cu-btn margin-bottom-sm' @click="GetLogin">
 				<text class='text-lg margin'>{{$t('me.logout')}}</text>
 			</button>
 		</view>
-		
+
 		<!-- Gitee弹窗 -->
 		<view class="cu-modal" :class="modalName=='ModalGitee'?'show':''">
 			<view class="cu-dialog">
@@ -283,12 +287,14 @@
 					<image src="https://cdn.zhoukaiwen.com/logo.png" mode="widthFix" style="width:150rpx;"></image>
 					<view class="text-bold text-xl text-balck margin-top-xs margin-bottom">《前端铺子》· 开源，易上手</view>
 					<view class="flex justify-between margin-bottom-lg">
-						<image src="https://svg.hamm.cn/gitee.svg?type=star&user=kevin_chou&project=qdpz" mode="heightFix" style="height:40rpx;"/>
-						<image src="https://svg.hamm.cn/gitee.svg?type=fork&user=kevin_chou&project=qdpz" mode="heightFix" style="height:40rpx;"/>
+						<image src="https://svg.hamm.cn/gitee.svg?type=star&user=kevin_chou&project=qdpz"
+							mode="heightFix" style="height:40rpx;" />
+						<image src="https://svg.hamm.cn/gitee.svg?type=fork&user=kevin_chou&project=qdpz"
+							mode="heightFix" style="height:40rpx;" />
 					</view>
-					
-					
-					
+
+
+
 					<p @click="getGitee">
 						<text class="margin-right-xs">[点击复制]</text>
 						<text class="giteeClass">https://gitee.com/kevin_chou</text>
@@ -310,8 +316,8 @@
 			return {
 				// Custom: this.Custom,
 				// CustomBar: this.CustomBar,
-				isChangeStudent:false,
-				spaceShow:true,
+				isChangeStudent: false,
+				spaceShow: true,
 				modalName: null,
 				picName: '流星之夜',
 				pic: [{
@@ -359,8 +365,8 @@
 					name: '流星之夜',
 					color: ''
 				}],
-				selectedIndex:-1,
-				selectedIndexLang:-1
+				selectedIndex: -1,
+				selectedIndexLang: -1
 			}
 		},
 		// 分享小程序
@@ -370,26 +376,25 @@
 				imageUrl: 'https://cdn.zhoukaiwen.com/qdpz_share.jpg',
 			};
 		},
-		watch:{
+		watch: {
 			topBackGroupImageIndex(val) {
 				console.log(val)
-				if (val == 4 || val == 5 ) {
+				if (val == 4 || val == 5) {
 					this.spaceShow = true;
-				}else{
+				} else {
 					this.spaceShow = false;
 				}
 			}
 		},
-		mounted() {
-		},
-		computed:{
-			studentName(){
+		mounted() {},
+		computed: {
+			studentName() {
 				return this.$store.getters.studentName;
 			},
-			studentInfo(){
+			studentInfo() {
 				return this.$store.getters.studentInfo;
 			},
-			getLang(){
+			getLang() {
 				return this.$store.getters.lang;
 			}
 		},
@@ -397,35 +402,37 @@
 			console.log(this.$store.getters.studentInfo);
 		},
 		methods: {
-			confirm(){
+			confirm() {
 				this.$store.dispatch('setStudentInfo', this.selectedIndex);
 				this.modalName = null
 				this.selectedIndex = -1
 			},
-			confirmLang(){
+			confirmLang() {
 				//localStorage.setItem('lang',this.$store.getters.lang[this.selectedIndexLang])
-				uni.setLocale('lang',this.$store.getters.lang[this.selectedIndexLang]);
+				console.log(this.$store.getters.lang[this.selectedIndexLang]);
+				uni.setStorageSync('lang', this.$store.getters.lang[this.selectedIndexLang]);
+				console.log(uni.getStorageSync('lang'));
 				this.$i18n.locale = this.$store.getters.lang[this.selectedIndexLang];
 				this.modalName = null
 			},
-			changeStudent(e){
+			changeStudent(e) {
 				this.selectedIndex = e;
 			},
-			changeLang(e){
+			changeLang(e) {
 				this.selectedIndexLang = e;
 			},
-			showStudent(e){
-				this.modalName = e.currentTarget.dataset.target		
+			showStudent(e) {
+				this.modalName = e.currentTarget.dataset.target
 			},
-			showLang(e){
-				this.modalName = e.currentTarget.dataset.target		
+			showLang(e) {
+				this.modalName = e.currentTarget.dataset.target
 			},
-			getGitee(){
+			getGitee() {
 				uni.setClipboardData({
-				    data: 'https://gitee.com/kevin_chou',
-				    success: function () {
-				        console.log('success');
-				    }
+					data: 'https://gitee.com/kevin_chou',
+					success: function() {
+						console.log('success');
+					}
 				});
 			},
 			switchImage(index, name) {
@@ -436,7 +443,7 @@
 			showModal(e) {
 				this.modalName = e.currentTarget.dataset.target
 			},
-			showGitee(e){
+			showGitee(e) {
 				this.modalName = e.currentTarget.dataset.target
 			},
 			hideModal(e) {
@@ -455,7 +462,7 @@
 					phoneNumber: "18629591093",
 				});
 			},
-			goMedal(){
+			goMedal() {
 				uni.navigateTo({
 					url: '../../tn_components/medal'
 				})
@@ -483,33 +490,32 @@
 				const userInfo = {
 					token: uni.getStorageSync('token'),
 				}
-				
+
 				let opts = {
 					url: 'portal/logout',
 					method: 'post',
-					type :5
+					type: 5
 				};
-				
+
 				uni.showLoading({
 					title: 'Loading!'
 				});
-				
-				request.httpRequest(opts,userInfo).then(res => {
+
+				request.httpRequest(opts, userInfo).then(res => {
 					uni.hideLoading();
-					if (res.data.code === 200) {					
+					if (res.data.code === 200) {
 						uni.navigateTo({
-							url:"/pages/login/login/login"
+							url: "/pages/login/login/login"
 						})
 						uni.clearStorage()
 					}
-				});				
+				});
 			}
 		}
 	}
 </script>
 
 <style lang="scss" scoped>
-	
 	.UCenter-bg {
 		background: #fff;
 		background-size: 100% 100%;
@@ -673,12 +679,14 @@
 	.margin-bottom-my {
 		margin-bottom: 150rpx;
 	}
-	.giteeClass{
+
+	.giteeClass {
 		margin-top: 30rpx;
 		font-size: 34rpx;
 		color: #2440B3;
 		text-decoration: underline;
 	}
+
 	.cu-dialog {
 		background: #FFFFFF;
 		overflow: visible;
@@ -723,7 +731,7 @@
 		color: #fff;
 		background: #152e9d;
 	}
-	
+
 	.bg-zt6 {
 		color: #fff;
 		background: #0f1358;
@@ -1317,14 +1325,16 @@
 		border-color: transparent transparent transparent #ffcd5c;
 		animation-delay: 5.8s;
 	}
+
 	.login-out {
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		margin-bottom: 30rpx;
 	}
+
 	.login-out button {
-		background-color:  #0081ff;
+		background-color: #0081ff;
 		color: #fff;
 	}
 

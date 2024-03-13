@@ -25,9 +25,6 @@
 			</view>
 		</view> -->
 
-		<!-- 流量主-腾讯广告 -->
-		<ad unit-id="adunit-961458988ac9ad8b" ad-intervals="30"></ad>
-
 		<!-- 导航栏 -->
 		<view class="cu-list grid solids-bottom col-4 no-border">
 			<view class="cu-item" v-for="(item, index) in categories" :key="index"
