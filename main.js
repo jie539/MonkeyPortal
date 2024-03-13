@@ -12,7 +12,6 @@ import uView from 'uview-ui';
 Vue.use(uView);
 //引入i18n
 import i18n from './i18n';
-
 Vue.config.productionTip = false
 
 App.mpType = 'app'
@@ -30,7 +29,6 @@ const app = new Vue({
 		  '/pages/login/forgot/forgot',
 		  '/pages/login/register/register'
 		];
-		
 	    if ((!uni.getStorageSync('studentInfo') || uni.getStorageSync('expireTime') < new Date().getTime()) && !excludedPaths.includes(currentPath)) {
 	      // 用户未登录，并且当前页面不是登录页面，跳转到登录页面
 		  setTimeout(()=>{
@@ -46,11 +44,13 @@ const app = new Vue({
 			 this.$store.state.user.studentId = uni.getStorageSync('studentId');
 			 this.$store.state.user.studentName = uni.getStorageSync('studentName');	
 		}
-		console.log(this.$store.getters.guardianId);
 		if(this.$store.getters.guardianId==''){
 			this.$store.dispatch('setGuardianId', uni.getStorageSync('guardianId'));		
 		}
-		console.log(sessionStorage.setItem('userID',123));		
+		if(this.$store.getters.guardianName==''){
+			this.$store.dispatch('setGuardianName', uni.getStorageSync('guardianName'));		
+		}
+		this.$store.dispatch('initWebSocket',this.$store.getters.guardianId);
 	},
 })
 app.$mount()

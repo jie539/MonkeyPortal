@@ -5,7 +5,7 @@
 		<search v-if="PageCur=='search'"></search>
 		<cases v-if="PageCur=='cases'"></cases>
 		<news v-if="PageCur=='news'"></news>
-		<chatList v-if="PageCur=='chatList'"></chatList>
+		<chatList v-if="PageCur=='chatList'" :key="componentKey"></chatList>
 		
 		<me v-if="PageCur=='me'"></me>
 		
@@ -96,6 +96,7 @@
 		},
 		data() {
 			return {
+				componentKey: 0,
 				PageCur: 'index',
 				message: '25',
 				openId:'',
@@ -130,6 +131,8 @@
 			}
 		},
 		onShow() {
+			console.log("show");
+			this.componentKey++;
 			this.getData();
 		},
 		methods: {

@@ -5,6 +5,8 @@ const getters = {
 	studentInfo: state => state.user.studentInfo,
 	lang: state => state.lang.type,
 	guardianId :status => status.user.guardianId,
+	guardianName :status => status.user.guardianName,
+	msg :status =>status.websocket.msg,
 };
 
 export default getters;

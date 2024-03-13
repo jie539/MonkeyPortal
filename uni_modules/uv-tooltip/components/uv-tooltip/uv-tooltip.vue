@@ -297,7 +297,7 @@
 				})
 			},
 			// 复制文本到粘贴板
-			setClipboardData() {
+			setClipboardData2() {
 				// 关闭组件
 				this.showTooltip = false
 				this.$emit('click', 0)
@@ -314,7 +314,80 @@
 						this.showTooltip = false
 					}
 				})
+			},
+			// setClipboardData() {
+			// 	// 关闭组件
+			// 	this.showTooltip = false
+			// 	this.$emit('click', 0)
+			// 	  const textToCopy = this.copyText || this.text;
+			
+			// 	  navigator.clipboard.writeText(textToCopy)
+			// 		.then(() => {
+			// 		  this.showToast && this.$uv.toast('复制成功');
+			// 		})
+			// 		.catch((error) => {
+			// 		  console.error('复制失败：', error);
+			// 		  this.showToast && this.$uv.toast('复制失败');
+			// 		})
+			// 		.finally(() => {
+			// 			  this.showTooltip = false;
+			// 		});
+			// }
+			setClipboardData() {
+			  // 关闭组件
+			  this.showTooltip = false;
+			  this.$emit('click', 0);
+			
+			  const textToCopy = this.copyText || this.text;
+			
+			  // 根据当前页面协议选择复制方法
+			  if (navigator.clipboard && window.isSecureContext) {
+				  // 在安全上下文中使用navigator.clipboard.writeText方法
+				  this.copyTextUsingClipboardAPI(textToCopy);
+
+			  } else {
+				// 在非安全上下文中使用document.execCommand方法
+				this.copyTextUsingExecCommand(textToCopy);
+			  }
+			},
+			
+			copyTextUsingExecCommand(textToCopy) {
+			  // 创建text area
+			  let textArea = document.createElement("textarea");
+			  textArea.value = textToCopy;
+			  // 使text area不在viewport，同时设置不可见
+			  textArea.style.position = "absolute";
+			  textArea.style.opacity = 0;
+			  textArea.style.left = "-999999px";
+			  textArea.style.top = "-999999px";
+			  document.body.appendChild(textArea);
+			  textArea.focus();
+			  textArea.select();
+			  return new Promise((res, rej) => {
+				  // 执行复制命令并移除文本框
+				  document.execCommand('copy') ? res() : rej();
+				  textArea.remove();
+				  this.showToast && this.$uv.toast('复制成功');
+			  }).catch((error)=>{
+				  this.showToast && this.$uv.toast('复制失败');
+				  textArea.remove();
+			  });
+			},
+			
+			copyTextUsingClipboardAPI(textToCopy) {
+			  navigator.clipboard.writeText(textToCopy)
+			    .then(() => {
+			      this.showToast && this.$uv.toast('复制成功');
+			    })
+			    .catch((error) => {
+			      console.error('复制失败：', error);
+			      this.showToast && this.$uv.toast('复制失败');
+			    })
+			    .finally(() => {
+			      this.showTooltip = false;
+			    });
 			}
+
 		}
 	}
 </script>

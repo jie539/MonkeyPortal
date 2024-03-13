@@ -4,7 +4,8 @@ const user ={
 		studentName:'',
 		studentInfo:[],
 		expireTime:'',
-		guardianId:''
+		guardianId:'',
+		guardianName:''
 	},
 	mutations:{
 		SET_STUDENT_INFO(state, { id, name }) {
@@ -26,7 +27,11 @@ const user ={
 		SET_GUARDIAN_ID(state, { guardianId }) {
 		      state.guardianId = guardianId;
 		      uni.setStorageSync('guardianId', guardianId);
-		}
+		},
+		SET_GUARDIAN_NAME(state, { guardianName }) {
+		      state.guardianName = guardianName;
+		      uni.setStorageSync('guardianName', guardianName);
+		},
 	},
 	actions:{
 		setStudentInfo({ commit, state }, index) {
@@ -43,6 +48,9 @@ const user ={
 		},
 		setGuardianId({ commit }, guardianId) {
 		      commit('SET_GUARDIAN_ID', { guardianId: guardianId || uni.getStorageSync('guardianId') });
+		},
+		setGuardianName({ commit }, guardianName) {
+		      commit('SET_GUARDIAN_NAME', { guardianName: guardianName || uni.getStorageSync('guardianName') });
 		}
 	}
 }

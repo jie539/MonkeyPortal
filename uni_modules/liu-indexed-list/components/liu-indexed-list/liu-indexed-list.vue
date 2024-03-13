@@ -4,7 +4,7 @@
 			:scroll-into-view="scrollIntoView">
 			<view class="liu-search" id="TOP">
 				<image class="liu-search-img" src="../../static/search.png"></image>
-				<input class="liu-input" @input="search" v-model="searchStr" placeholder="请输入搜索信息" maxlength="50"
+				<input class="liu-input" @input="search" @blur="handleSearch" v-model="searchStr" placeholder="请输入搜索信息" maxlength="50"
 					placeholder-class="liu-placeholder" />
 			</view>
 			<view class="left-list" v-for="(item,index) of scrollLeftObj" :key="index" :id="index!='#'?index:'BOTTOM'">
@@ -91,7 +91,11 @@
 				immediate: true,
 				deep: true,
 				handler(newList) {
-					if (newList && newList.length) this.cleanData(newList)
+					if (newList && newList.length) {
+						this.cleanData(newList)
+						this.hasData = true;
+					}
+					
 				},
 			},
 		},
@@ -113,6 +117,13 @@
 					this.hasData = true
 					this.scrollLeftObj = JSON.parse(JSON.stringify(this.oldObj))
 				}
+			},
+			toSearch(){
+				console.log('toSearch');
+			},
+			//搜索聊天对象
+			handleSearch(){
+				this.$emit('search', this.searchStr);
 			},
 			cleanData(list) {
 				this.scrollRightList = this.getLetter()

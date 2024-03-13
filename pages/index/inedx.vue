@@ -5,9 +5,9 @@
 			<!-- <block slot="backText">返回</block> -->
 			<block slot="content">首页</block>
 		</cu-custom>
-	<h1></h1>
+		<h1></h1>
 
-<!-- 		<add-tip :tip="tip" :duration="duration" /> -->
+		<!-- 		<add-tip :tip="tip" :duration="duration" /> -->
 
 		<!-- banner图 -->
 		<!-- <view class="uni-padding-wrap">
@@ -24,7 +24,7 @@
 				</view>
 			</view>
 		</view> -->
-		
+
 		<!-- 流量主-腾讯广告 -->
 		<ad unit-id="adunit-961458988ac9ad8b" ad-intervals="30"></ad>
 
@@ -42,7 +42,7 @@
 			</view>
 		</view>
 
-		<view class="message-box">
+<!-- 		<view class="message-box">
 			<view class="page-section swiper">
 				<view class="page-section-spacing">
 					<swiper style="height: 120rpx;" class="swiper" vertical="ture" circular="true"
@@ -55,23 +55,21 @@
 					</swiper>
 				</view>
 			</view>
-		</view>
-		
-		
-		<image @click="goAboutUs" class="jn_img" src="https://zhoukaiwen.com/img/index_hz2.jpg" mode="widthFix"></image>
-	
-		<view class="cu-bar bg-white margin-top-xs">
+		</view> -->
+
+
+<!-- 		<image @click="goAboutUs" class="jn_img" src="https://zhoukaiwen.com/img/index_hz2.jpg" mode="widthFix"></image> -->
+
+<!-- 		<view class="cu-bar bg-white margin-top-xs">
 			<view class="action sub-title">
 				<text class="text-xl text-bold text-blue text-shadow">热门视频</text>
 				<text class="text-ABC text-blue">curriculum</text>
 			</view>
 			<view class="action" @click="goVideo"><text class="text-lg text-grey text-shadow">更多</text></view>
-		</view>
+		</view> -->
 
-		<view class="skill-sequence-panel-content-wrapper">
-			<!--左边虚化-->
+<!-- 		<view class="skill-sequence-panel-content-wrapper">
 			<view class="hide-content-box hide-content-box-left"></view>
-			<!--右边虚化-->
 			<view class="hide-content-box hide-content-box-right"></view>
 			<scroll-view scroll-x="true" class="kite-classify-scroll">
 				<view class="kite-classify-cell shadow" v-for="(item, index) in curriculum" :key="index">
@@ -82,13 +80,45 @@
 					<view @click="goVideo" class="nav-btn shadow" :class="'bg-index' + (index + 1)">立即学习</view>
 				</view>
 			</scroll-view>
-		</view>
+		</view> -->
 		<view class="cu-bar bg-white margin-top-xs">
 			<view class="action sub-title">
-				<text class="text-xl text-bold text-blue text-shadow">项目展示</text>
+				<text class="text-xl text-bold text-blue text-shadow">商品展示</text>
 				<text class="text-ABC text-blue">curriculum</text>
 			</view>
 			<view class="action" @click="goProjectList"><text class="text-lg text-grey text-shadow">更多</text></view>
+		</view>
+
+		<view>
+			<view class="margin-top-sm margin-left-xl text-xl" style="color: #614319;">
+				Rewards
+			</view>
+			<view class="margin-top-sm">
+				<button class="margin-left-xl cu-btn round bg-yellow" style="color: #6f5e3b;">Complimenting <br /> Redmption</button>
+				<button class="margin-left-xs cu-btn round bg-olive">Discounted <br /> Benfits</button>
+			</view>
+			<view class="margin-left-xl margin-top-sm">
+				<view class="skill-sequence-panel-content-wrapper">
+					<!--左边虚化-->
+					<view class="hide-content-box hide-content-box-left"></view>
+					<!--右边虚化-->
+					<view class="hide-content-box hide-content-box-right"></view>
+					<scroll-view scroll-x="true" class="kite-classify-scroll">
+						<view class="kite-classify-cell shadow" v-for="(item, index) in products" :key="index">
+							<!-- <view :class="'nav-li bg-index' + (index + 1)">
+								<view class="nav-name">{{ item.name }}</view>
+							</view> -->
+							<view class="nav-content" style="background-color: #ffcb23;">
+<!-- 								<u-image src="http://194.233.70.163:8080/monkeyTreeTest20211104/c68bc383-eb13-45a9-a5de-658bf9e24d54.jpg"></u-image> -->
+								<u-image :src="item" width="100%" height="260rpx" :lazy-load="true" border-radius="30rpx" mode="aspectFill" @click="productDetail(item)">
+									<u-loading slot="loading"></u-loading>
+								</u-image>
+							</view>
+						</view>
+					</scroll-view>
+				</view>
+				
+			</view>
 		</view>
 
 		<view class="cu-card case no-card">
@@ -134,6 +164,13 @@
 		},
 		data() {
 			return {
+				products:[
+					'http://194.233.70.163:8080/monkeyTreeTest20211104/p1.jpg',
+					'http://194.233.70.163:8080/monkeyTreeTest20211104/p2.jpg',
+					'http://194.233.70.163:8080/monkeyTreeTest20211104/p3.jpg',
+					'http://194.233.70.163:8080/monkeyTreeTest20211104/p4.jpg',
+					'http://194.233.70.163:8080/monkeyTreeTest20211104/p5.jpg',
+				],
 				tip: '点击「添加小程序」，下次访问更便捷',
 				duration: 1,
 
@@ -141,7 +178,6 @@
 				old: {
 					scrollTop: 0
 				},
-
 				bannerList: [{
 						imageUrl: 'https://cdn.zhoukaiwen.com/zjx_banner.png'
 					},
@@ -222,11 +258,11 @@
 		watch: {},
 		mounted() {
 			this.getData();
-			
-			
+
+
 			// 在页面中定义插屏广告
 			let interstitialAd = null
-			
+
 			// 在页面onLoad回调事件中创建插屏广告实例
 			// if (wx.createInterstitialAd) {
 			//   interstitialAd = wx.createInterstitialAd({
@@ -236,40 +272,34 @@
 			//   interstitialAd.onError((err) => {})
 			//   interstitialAd.onClose(() => {})
 			// }
-			
+
 			// 在适合的场景显示插屏广告
 			if (interstitialAd) {
-			  interstitialAd.show().catch((err) => {
-			    console.error(err)
-			  })
+				interstitialAd.show().catch((err) => {
+					console.error(err)
+				})
 			}
 			// 插屏广告结束
 		},
 		methods: {
+			productDetail(item){
+				console.log(item);
+				uni.navigateTo({
+					url:'/pages/productDetail/productDetail01?productImg='+item
+				})
+			},
 			getData() {
-				//console.log('数据加载');
 				let opts = {
 					url: 'api/project/list',
 					method: 'get'
 				};
-				// uni.showLoading({
-				// 	title: '加载中'
-				// });
-				// request.httpRequest(opts).then(res => {
-				// 	uni.hideLoading();
-				// 	if (res.statusCode == 200) {
-				// 		this.projectList = res.data.data;
-				// 	} else {
-				// 		this.projectList = [];
-				// 	}
-				// });
 			},
 			scroll: function(e) {
 				console.log(e);
 				this.old.scrollTop = e.detail.scrollTop;
 			},
 			goCategorieslist: function(e) {
-				 console.log(e.currentTarget.dataset.mid)
+				console.log(e.currentTarget.dataset.mid)
 				if (e.currentTarget.dataset.mid == 1 || e.currentTarget.dataset.mid == 2) {
 					console.log(555);
 					uni.navigateTo({
@@ -302,7 +332,7 @@
 					url: '../video'
 				});
 			},
-			goAboutUs(){
+			goAboutUs() {
 				uni.navigateTo({
 					url: '../me/about_us'
 				})
@@ -334,22 +364,22 @@
 				if (!value) {
 					return;
 				}
-				if(value == 2){
+				if (value == 2) {
 					return 'Gitee开源'
 				}
-				if(value == 3){
+				if (value == 3) {
 					return '可商用'
 				}
-				if(value == 4){
+				if (value == 4) {
 					return '商业项目'
 				}
-				if(value == 5){
+				if (value == 5) {
 					return '付费模板'
 				}
-				if(value == 6){
+				if (value == 6) {
 					return '仅供参考'
 				}
-				if(value == 7){
+				if (value == 7) {
 					return '其他类型'
 				}
 			}
@@ -364,7 +394,8 @@
 	.swiper-item {
 		height: 100%;
 	}
-	.jn_img{
+
+	.jn_img {
 		width: 700rpx;
 		display: block;
 		margin: 15rpx auto;
@@ -436,11 +467,11 @@
 
 	.kite-classify-cell {
 		display: inline-block;
-		width: 266rpx;
-		height: 370rpx;
+		width: 290rpx;
+		//height: 280rpx;
 		margin-right: 20rpx;
+		border-radius: 30rpx;
 		background-color: #ffffff;
-		border-radius: 10rpx;
 		overflow: hidden;
 		box-shadow: 2px 2px 3px rgba(26, 26, 26, 0.2);
 	}
@@ -488,7 +519,7 @@
 
 	.nav-content {
 		width: 100%;
-		padding: 15rpx;
+		padding: 10rpx;
 		display: inline-block;
 		overflow-wrap: break-word;
 		white-space: normal;

@@ -182,6 +182,16 @@
 				"navigationBarTitleText" : "",
 				"enablePullDownRefresh" : false
 			}
+		},
+		{
+			"path" : "pages/productDetail/productDetail01",
+			"style" : 
+			{
+				"navigationBarTitleText" : "",
+				"enablePullDownRefresh" : false,
+				"navigationStyle": "custom",
+				"backgroundColor": "#FFFFFF!important"
+			}
 		}
 	],
 	"subPackages": [{

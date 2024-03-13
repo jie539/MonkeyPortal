@@ -1,3 +1,5 @@
 .hbuilderx
 unpackage
 LICENSE
+node_modules/
+dust/

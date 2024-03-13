@@ -25,7 +25,7 @@
 					Vue.prototype.CustomBar = e.statusBarHeight + e.titleBarHeight;
 					// #endif
 				}
-			});
+			});			
 		},
 		onShow: function() {
 			console.log('App Show')

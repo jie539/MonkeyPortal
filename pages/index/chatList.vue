@@ -10,16 +10,17 @@
 		  <view class="content">
 			<view class="text-grey">{{ item.senderName }}</view>
 			<view class="text-gray text-sm">
-			  <text class="cuIcon-infofill text-red margin-right-xs" v-if="!item.isSuccess"></text><rich-text style="display: contents;" :nodes="item.message"></rich-text>
+			  <text class="cuIcon-infofill text-red margin-right-xs" v-if="!item.isSuccess"></text>
+			  <rich-text style="display: contents;" :nodes="item.message ? item.message : '&ZeroWidthSpace;'"></rich-text>
 			</view>
 		  </view>
 		  <view class="action">
 			<view class="text-grey text-xs">{{ item.timestamp }}</view>
-			<view class="cu-tag round bg-grey sm">{{ item.unreadCount }}</view>
+			<view class="cu-tag round sm" :class="item.unreadCount === 0 ? 'bg-w' : 'bg-grey'">{{ item.unreadCount }}</view>
 		  </view>
 		  <view class="move">
-			<view class="bg-grey" @tap.stop="Topping(index)">置顶</view>
-			<view class="bg-red" @tap.stop="deleteItem(index)">删除</view>
+			<view class="bg-grey" @tap.stop="Topping(index,item)">置顶</view>
+			<view class="bg-red" @tap.stop="deleteItem(index,item)">删除</view>
 		  </view>
 		</view>
 		<cu-custom/>
@@ -34,7 +35,8 @@
 				modalName: null,
 				listTouchStart: 0,
 				listTouchDirection: null,
-				chatRecords: [
+				chatRecords:[],
+				chatRecords2: [
 					{
 					  avatar: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big21002.jpg',
 					  senderName: '文晓港',
@@ -142,14 +144,59 @@
 				]
 			}
 		},
+		onShow() {
+			console.log("onshow");
+		},
 		onLoad() {
-			this.getChatList();
+			//this.getChatList();
 			console.log("onload");
 		},
 		created() {
 			this.getChatList();
 			console.log("created");
 		},
+		computed:{
+			getMessage(){
+				return this.$store.getters.msg;
+			},
+		},
+		watch: {
+		  getMessage(newValue, oldValue) {
+		    // 在 getMessage 的值发生变化时执行相应的操作
+			console.log(JSON.parse(newValue));
+		    console.log(JSON.parse(newValue).msg.userinfo.uid);
+			let { msg: { id, userMessageId, time, type, userinfo: { uid, username, face }, content: { text } } } = JSON.parse(newValue);
+			// 查找是否存在 guardianId 等于 uid 的对象
+			const existingRecordIndex = this.chatRecords.findIndex(record => record.guardianId === uid);
+			if (existingRecordIndex !== -1) {
+			    // 如果存在，则将该对象移到数组的第一个位置，其他对象依次往后移动
+				const existingRecord = this.chatRecords[existingRecordIndex];
+				// 删除原位置的对象
+				this.chatRecords.splice(existingRecordIndex, 1);
+				// 将该对象插入数组的第一个位置
+				this.chatRecords.unshift(existingRecord);
+				//修改对象未读数量和信息
+				existingRecord.unreadCount += 1;
+				existingRecord.message = text;
+			  } else {
+				  if (text.includes("img")) {
+				    text = '<div style="display: flex;align-items: center;flex-wrap: wrap;">[动画表情]</div>';
+				  }
+			    // 如果不存在，则创建新对象并插入数组的第一个位置
+				this.chatRecords.unshift({ 
+					avatar: face,
+					senderName: username,
+					message: text,
+					timestamp: time.split(' ')[1], // 提取时间部分
+					unreadCount: 1,
+					guardianId: uid,
+					userMessageId: userMessageId,
+					isSuccess: true ,// 这里没有原始数据中的字段，我假设为 true
+					});
+			  }
+		  }
+		},
+
 		methods: {
 			getChatList(){
 				let opts = {
@@ -165,17 +212,18 @@
 					uni.hideLoading();
 					if (res.data.code == 200) {					
 						console.log(res.data.chatMessage);
-						const items = res.data.chatMessage.map(message => {
+						const items = res.data.chatMessage.map(({ face, username, text, createTime, unreadNum, uid, userMessageId }) => {
 						    return {
-						        avatar: message.face,
-						        senderName: message.username,
-						        message: message.text,
-						        timestamp: message.sendTime.split(' ')[1], // 提取时间部分
-						        unreadCount: message.unreadNum,
-								guardianId:message.uid,
+						        avatar: face,
+						        senderName: username,
+						        message: text,
+						        timestamp: createTime.split(' ')[1], // 提取时间部分
+						        unreadCount: unreadNum,
+						        guardianId: uid,
+						        userMessageId: userMessageId,
 						        isSuccess: true // 这里没有原始数据中的字段，我假设为 true
 						    };
-						});	
+						});
 						console.log(items);
 						this.chatRecords.push(...items);
 					} else {
@@ -183,25 +231,83 @@
 					}
 				});
 			},
-			deleteItem(index){
+			deleteItem(index,item){
 				this.chatRecords.splice(index, 1);
+				console.log(item);
+				let opts = {
+					url: 'userMessage/updateUserListDetail',
+					method: 'post',
+					type :5
+				};
+				
+				const userMessageDetail = {
+					tUserMessageId: item.userMessageId,
+					uid: item.guardianId,
+					status: 0
+				}
+				
+				uni.showLoading({
+					title: '加载中!'
+				});
+				
+				request.httpRequest(opts,userMessageDetail).then(res => {
+					//关闭加载框
+					uni.hideLoading();
+					//判断返回状态码
+					if (res.data.code == 200) {					
+						//打印返回数据
+						console.log(res.data);	
+						//强制更新组件
+						this.$forceUpdate()			
+					} else {
+						//打印错误信息
+						console.log('error!');
+					}
+				});
 			},
-			Topping(index){
+			Topping(index,item){
 				const selectedRecord = this.chatRecords.splice(index, 1)[0];
 				this.chatRecords.unshift(selectedRecord);
+				console.log(item);
+				let opts = {
+					url: 'userMessage/updateUserListDetail',
+					method: 'post',
+					type :5
+				};
+				
+				const userMessageDetail = {
+					tUserMessageId: item.userMessageId,
+					uid: item.guardianId,
+					topSort: 1
+				}
+				
+				uni.showLoading({
+					title: '加载中!'
+				});
+				
+				request.httpRequest(opts,userMessageDetail).then(res => {
+					uni.hideLoading();
+					if (res.data.code == 200) {					
+						console.log(res.data);			
+						this.$forceUpdate()
+					} else {
+						console.log('error!');
+					}
+				});
 			},
 			ListListTouch(item){
 				  // 获取点击的元素
 				  const targetElement = event.currentTarget;
 			
 				  // 通过操作 DOM 获取相应的值
-				  const name = targetElement.querySelector('.text-grey').textContent;
-				  const url = targetElement.querySelector('.cu-avatar').style.backgroundImage;
+				  //const name = targetElement.querySelector('.text-grey').textContent;
+				  //const url = targetElement.querySelector('.cu-avatar').style.backgroundImage;
 				  // 输出获取到的值
-				  console.log('Name:', name);
-				  console.log('URL:', url);
+				  //console.log('Name:', name);
+				  //console.log('URL:', url);
+				  console.log(item);
 				  uni.navigateTo({
-				  	url:'/pages/chat/chatroom?url='+item.avatar+'&name='+name+'&guardianId='+item.guardianId,
+				  	url:'/pages/chat/chatroom?url='+item.avatar+'&name='+item.senderName+'&guardianId='+item.guardianId+'&userMessageId='+item.userMessageId,
 				  })
 			},
 			// ListTouch触摸开始，获取触摸点距盒子左侧的距离
@@ -228,5 +334,8 @@
 <style>
 	.bottom{
 		margin-bottom: 100upx;
+	}
+	.bg-w{
+		color: #ffffff;
 	}
 </style>

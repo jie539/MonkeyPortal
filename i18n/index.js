@@ -21,7 +21,8 @@ const messages = {
 }
 
 export const getStorage = function(key){
-	const str = localStorage.getItem(key)
+	const str = uni.getStorage(key);
+	// const str = localStorage.getItem(key)
 	return str
 }
 

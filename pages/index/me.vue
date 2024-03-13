@@ -403,7 +403,8 @@
 				this.selectedIndex = -1
 			},
 			confirmLang(){
-				localStorage.setItem('lang',this.$store.getters.lang[this.selectedIndexLang])
+				//localStorage.setItem('lang',this.$store.getters.lang[this.selectedIndexLang])
+				uni.setLocale('lang',this.$store.getters.lang[this.selectedIndexLang]);
 				this.$i18n.locale = this.$store.getters.lang[this.selectedIndexLang];
 				this.modalName = null
 			},

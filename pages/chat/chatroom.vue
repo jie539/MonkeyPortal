@@ -19,9 +19,14 @@
 					<block v-if="row.type=='system'">
 						<view class="system">
 							<!-- 文字消息 -->
-							<view v-if="row.msg.type=='text'" class="text">
-								{{row.msg.content.text}}
+							<view v-if="row.msg.type=='text' && row.msg.userinfo.uid==senderUid" class="text">
+							    {{ '你' + row.msg.content.text }}
 							</view>
+							<view v-else-if="row.msg.type=='text'" class="text">
+							    {{ '对方' + row.msg.content.text }}
+							</view>
+
+
 							<!-- 领取红包消息 -->
 							<view v-if="row.msg.type=='redEnvelope'" class="red-envelope">
 								<image src="/static/chat/red-envelope-chat.png"></image>
@@ -43,6 +48,7 @@
 										:showCopy="true"
 										:isSlot="true"
 										:id="row.msg.id"
+										:copyText="extractText(row.msg.content.text)"
 									>
 									<!-- <rich-text :nodes="row.msg.content.text"></rich-text> -->
 									<rich-text :nodes="row.msg.content.text"></rich-text>
@@ -224,9 +230,13 @@
 	import request from '@/common/request.js';
 	import { onlineEmoji, emojiList } from '@/tn_components/chat/emojiData/emojiData.js';
 	import { stdout } from 'process';
+	import { SourceTextModule } from 'vm';
+import { data } from 'uview-ui/libs/mixin/mixin';
 	export default {
 		data() {
 			return {
+				userMessageId:0,
+				logNum:0,
 				text:'删除',
 				button:['撤回'],
 				testMsg:`<div><uv-tooltix :buttons="button" @click="bubbleEvent" :showCopy="true" :isSlot="true" :id="row.msg.id"><rich-text nodes="123">123</rich-text></uv-tooltip></div>`,
@@ -239,8 +249,11 @@
 				scrollTop: 0,
 				scrollToView: '',
 				msgList: [],
+				msgList2: [],
 				msgImgList: [],
 				senderUid: this.$store.getters.guardianId,
+				senderFace:'https://zhoukaiwen.com/img/kevinLogo.png',
+				senderName:this.$store.getters.guardianName,
 				receiverUid:456,
 				receiverFace:'',
 				receiverName:'',
@@ -285,12 +298,24 @@
 				}
 			};
 		},
+		onUnload(){
+			//取消监控
+			if(this.watcher){
+				this.watcher();
+			}
+			console.log('取消监控');
+			this.$store.dispatch('exitChat', { receiverUid: this.receiverUid, senderUid: this.senderUid });
+		},
 		onLoad(option) {
-			this.init();
 			this.receiverUid = parseInt(option.guardianId);
 			this.receiverFace = option.url;
 			this.receiverName = option.name;
+			this.userMessageId = option.userMessageId;
 			this.getMsgList();
+				
+			//创建消息监控	
+			this.createWatch();
+	
 			//语音自然播放结束
 			this.AUDIO.onEnded((res) => {
 				this.playMsgid = null;
@@ -311,7 +336,7 @@
 		},
 		onBackPress(options) {
 			console.log('返回');
-			this.disconnectWebSocket();
+			//this.disconnectWebSocket();
 		},
 		onShow() {
 			this.scrollTop = 9999999;
@@ -351,25 +376,92 @@
 			});
 		},
 		methods: {
+			extractText(html) {
+			  // 使用正则表达式提取 HTML 中的纯文本
+			  return html.replace(/<[^>]+>/g, '');
+			},
+			createWatch(){
+				console.log(this.watcher);
+				if(!this.watcher){
+					this.watcher =this.$store.watch(
+					  (state) => state.websocket.msg,
+					  (msg) => {
+					    console.log('state.websocket.msg发生变化:');
+						if(msg != null){
+							this.screenMsg(JSON.parse(msg))
+						}				
+					  },
+					);
+				}
+				console.log(this.watcher);
+				this.$store.dispatch('joinChat', { receiverUid: this.receiverUid, senderUid: this.senderUid });
+			},
 			rightClickHandler(event) {
 			    event.preventDefault(); // 阻止默认的右键事件
 			},
 			bubbleEvent(e,msgId){
 				const index = this.msgList.findIndex(message => message.msg.id === msgId);
 				const desiredMessage = this.msgList[index];
-				const newMessage = {
-					type: "system",
-					msg: {
-						id: 0,
-						type: "text",
-						content:{
-							text:"已撤销"
-						}
-					}
-				};
+				const {id,time} = desiredMessage.msg;
+				// 将时间字符串转换为时间戳
+				const messageTime = new Date(time).getTime();
+				// 获取当前时间戳
+				const currentTime = Date.now();
 				
-				// 将找到的对象替换为新对象
-				this.$set(this.msgList, index, newMessage);
+				// 计算时间差（单位：毫秒）
+				const timeDiff = currentTime - messageTime;
+				// 定义时间阈值（两分钟）
+				const timeThreshold = 2 * 60 * 1000;
+				
+				// 判断时间差是否超过时间阈值
+				if (timeDiff > timeThreshold) {
+					uni.showToast({
+					title: '超过两分钟不能撤回',
+					icon:'none',
+					duration: 2000
+					});
+				} else {
+				    const newMessage = {
+				    	type: "system",
+				    	msg: {
+				    		id: id,
+				    		type: "text",
+							userinfo:{
+								uid:this.senderUid
+							},
+				    		content:{
+				    			text:"撤回了一条消息"
+				    		}
+				    	}
+				    };	
+				    // 将找到的对象替换为新对象
+				    this.$set(this.msgList, index, newMessage);
+					this.send(newMessage);
+					// let opts = {
+					// 	url: 'chatMessage/edit',
+					// 	method: 'post',
+					// 	type :5
+					// };
+					
+					// const chatMessage = {
+					// 	id: id,
+					// 	type: "system",
+					// 	newText: "撤回了一条消息"
+					// }
+					
+					// uni.showLoading({
+					// 	title: '加载中!'
+					// });
+					
+					// request.httpRequest(opts,chatMessage).then(res => {
+					// 	uni.hideLoading();
+					// 	if (res.data.code == 200) {					
+							
+					// 	} else {
+					// 		console.log('error!');
+					// 	}
+					// });
+				}							
 			},
 			// 接受消息(筛选处理)
 			screenMsg(msg) {
@@ -400,7 +492,6 @@
 							this.addRedEnvelopeMsg(msg);
 							break;
 					}
-					console.log('用户消息');
 					//非自己的消息震动
 					if (msg.msg.userinfo.uid != this.senderUid) {
 						console.log('振动');
@@ -526,8 +617,8 @@
 				};
 				
 				let userIds = {
-					senderUid: this.senderUid,
-					receiverUid: this.receiverUid
+					userId1: this.senderUid,
+					userId2: this.receiverUid
 				}
 				
 				uni.showLoading({
@@ -537,15 +628,17 @@
 					uni.hideLoading();
 					if (res.data.code == 200) {					
 						list = res.data.chatMessage.userMessages
-						
-						// 获取消息中的图片,并处理显示尺寸
-						for (let i = 0; i < list.length; i++) {
-							if (list[i].type == 'user' && list[i].msg.type == "img") {
-								list[i].msg.content = this.setPicSize(list[i].msg.content);
-								this.msgImgList.push(list[i].msg.content.url);
+						if(list){
+							// 获取消息中的图片,并处理显示尺寸
+							for (let i = 0; i < list.length; i++) {
+								if (list[i].type == 'user' && list[i].msg.type == "img") {
+									list[i].msg.content = this.setPicSize(list[i].msg.content);
+									this.msgImgList.push(list[i].msg.content.url);
+								}
 							}
+							this.msgList = list;
 						}
-						this.msgList = list;
+						
 						// 滚动到底部
 						this.$nextTick(function() {
 							//进入页面滚动到底部
@@ -560,24 +653,6 @@
 						console.log('error!');
 					}
 				});
-					
-				// // 获取消息中的图片,并处理显示尺寸
-				// for (let i = 0; i < list.length; i++) {
-				// 	if (list[i].type == 'user' && list[i].msg.type == "img") {
-				// 		list[i].msg.content = this.setPicSize(list[i].msg.content);
-				// 		this.msgImgList.push(list[i].msg.content.url);
-				// 	}
-				// }
-				// this.msgList = list;
-				// // 滚动到底部
-				// this.$nextTick(function() {
-				// 	//进入页面滚动到底部
-				// 	this.scrollTop = 9999;
-				// 	this.$nextTick(function() {
-				// 		this.scrollAnimation = true;
-				// 	});
-
-				// });
 			},
 			//处理图片尺寸，如果不处理宽高，新进入页面加载图片时候会闪
 			setPicSize(content) {
@@ -632,6 +707,7 @@
 			},
 			//选照片 or 拍照
 			getImage(type) {
+				console.log("本地图片");
 				this.hideDrawer();
 				uni.chooseImage({
 					sourceType: [type],
@@ -648,12 +724,92 @@
 										w: image.width,
 										h: image.height
 									};
+									// 发送图片信息和图片文件到服务器
+									//this.uploadImageToServer(msg);
+									// uni.uploadFile({
+									// 	url: 'https://appportal.monkeytree.com.hk/upload/image', //仅为示例，非真实的接口地址
+									// 	filePath: res.tempFilePaths[i],
+									// 	name: 'file',
+									// 	formData: {
+									// 		'user': 'test'
+									// 	},
+									// 	success: (uploadFileRes) => {
+									// 		console.log(uploadFileRes.data);
+									// 	}
+									// });
+									// 发送图片信息和图片文件到服务器
+									// uploadImageRequest({
+									//     type: 5, // 根据需要设置请求类型
+									//     url: 'upload/image' // 上传图片的接口路径，不需要baseUrl
+									// }, {
+									//     file: res.tempFilePaths[i], // 将图片路径作为文件参数
+									//     user: 'test' // 其他表单数据
+									// }).then((uploadFileRes) => {
+									//     console.log(uploadFileRes); // 上传成功后的处理
+									// }).catch((error) => {
+									//     console.error(error); // 发生错误时的处理
+									// });
+									
+									let opts = {
+										url: 'commmon/upload',
+										method: 'post',
+										type :5
+									};
+									
+									let formData = new FormData();
+									formData.append('file', res.tempFilePaths[i]); // 添加文件数据到FormData对象
+									formData.append('user', 'test'); // 添加其他表单数据到FormData对象
+					
+									uni.showLoading({
+										title: '加载中!'
+									});
+									request.uploadImageRequest(opts,formData).then(res => {
+										uni.hideLoading();
+										if (res.data.code == 200) {	
+										} else {
+											console.log('error!');
+										}
+									}).catch(error => {
+										uni.hideLoading();
+										console.error(error); // 发生错误时的处理
+									});
+									
+
 									this.sendMsg(msg, 'img');
 								}
 							});
 						}
 					}
 				});
+			},
+			// 将图片信息和图片文件一起上传到服务器
+			uploadImageToServer(msg) {
+			  let formData = new FormData();
+			  formData.append('imageFile', msg.url);
+			  formData.append('width', msg.w);
+			  formData.append('height', msg.h);
+			
+			  // 将FormData对象转换为普通的对象
+			  let data = {};
+			  formData.forEach((value, key) => {
+			    data[key] = value;
+			  });
+			  
+			  // 发起网络请求
+			  uni.request({
+			    url: 'https://appbackend.monkeytree.com.hk/upload/image',
+			    method: 'POST',
+			    data: data, // 传递转换后的普通对象给data参数
+			    header: {
+			      'content-type': 'multipart/form-data'
+			    },
+			    success: res => {
+			      console.log('上传成功', res);
+			    },
+			    fail: err => {
+			      console.error('上传失败', err);
+			    }
+			  });
 			},
 			// 选择表情
 			chooseEmoji() {
@@ -676,60 +832,26 @@
 					this.hideDrawer();
 				}
 			},
-			async init(){
-				let that = this;
-				// 初始化 WebSocket 连接
-				this.ws = new WebSocket('ws://localhost:8085/chat');
-			
-				// WebSocket 连接成功时的回调
-				this.ws.onopen = function (event) {
-					console.log(that.senderUid);	
-					that.ws.send(JSON.stringify({ action: 'setUserId', userId: that.senderUid }));
-					
-					console.log('WebSocket 连接已打开');
-					// 这里可以添加其他逻辑，例如发送欢迎消息等
-				};
-			
-				// 接收到消息时的回调
-				this.ws.onmessage = function (event) {
-					console.log('收到消息:');
-					console.log(event.data);
-					that.screenMsg(JSON.parse(event.data));
-					//that.getMsg = event.data;
-					// 处理接收到的消息，可以根据需要进行操作
-				};
-			
-				// WebSocket 连接关闭时的回调
-				this.ws.onclose = function (event) {
-					console.log('WebSocket 连接已关闭', event);
-			
-					// 如果需要自动重连，可以在这里添加重连逻辑
-					// 例如，重新调用 init() 方法
-			
-					// 注意：在生产环境中，要注意控制重连频率，避免过于频繁的重连
-				};
-				this.ws.onerror = (error) => {
-				  console.error('WebSocket 连接发生错误:', error);
-				};
-			},
-			disconnectWebSocket() {
-			    if (this.ws) {
-			        // 关闭 WebSocket 连接
-			        //this.ws.close();
-					this.ws.send(JSON.stringify({ action: 'removeUserId', userId: this.senderUid }));
-			        console.log('WebSocket 连接已断开');
-			    } else {
-			        console.log('WebSocket 连接不存在');
-			    }
-			},
+			// disconnectWebSocket() {
+			// 	const ws = this.$store.state.websocket.ws;
+			// 	  if (ws) {
+			// 	  } else {
+			// 		console.error('WebSocket 连接尚未建立');
+			// 	  }
+			// },
 			send(msg){
-				//this.ws.send(this.sendMsg);
-				var messageObject = {
-				        action: 'sendMessageToUser',
-				        userId: this.receiverUid,
-				        message: msg
-				};
-				this.ws.send(JSON.stringify(messageObject));
+				const ws = this.$store.state.websocket.ws;
+			  if (ws) {
+				  var messageObject = {
+				          action: 'sendMessageToUser',
+				          userId: this.receiverUid,
+				          message: msg
+				  };
+				ws.send(JSON.stringify(messageObject));
+				console.log('send');
+			  } else {
+				console.error('WebSocket 连接尚未建立');
+			  }
 			},
 			// 发送文字消息
 			sendText() {
@@ -773,81 +895,34 @@
 
 			// 发送消息
 			sendMsg(content, type) {
+				console.log(content);
 				//实际应用中，此处应该提交长连接，模板仅做本地处理。
 				var nowDate = new Date();
-				let lastid = this.msgList[this.msgList.length - 1].msg.id;
+				let lastid = this.msgList.length > 0 ? this.msgList[this.msgList.length - 1].msg.id : 1;
 				lastid++;
-				let face;
-				let name;
-				console.log(this.senderUid);
-				if(this.senderUid === 105766){
-					name = '大黑哥';
-					face = 'https://zhoukaiwen.com/img/kevinLogo.png';
-				}else{
-					name = '小红姐';
-					face = 'https://zhoukaiwen.com/img/qdpz/face/face_2.jpg';
-				}
 				let msg = {
 					type: 'user',
 					msg: {
 						id: lastid,
+						userMessageId:this.userMessageId,
 						time: timeFormat( nowDate, 'YYYY-MM-DD HH:mm:ss'),
 						type: type,
 						userinfo: {
 							uid: this.senderUid,
-							username: name,
-							face: face
+							username: this.senderName,
+							face: this.senderFace
 						},
 						content: content
 					}
 				}
-				//向服务器发送信息
-				let opts = {
-					url: `chatMessage/insertChatMessage?receiverUid=${this.receiverUid}`,
-					method: 'post',
-					type :5
-				};
-				
-				uni.showLoading({
-					title: '加载中!'
-				});
-				request.httpRequest(opts,msg).then(res => {
-					uni.hideLoading();
-					if (res.data.code == 200) {					
-						console.log(res.data);
-					} else {
-						console.log('error!');
-					}
-				});
 				
 				// 发送消息
 				this.screenMsg(msg);
 				this.send(msg)
-				// 定时器模拟对方回复,三秒
-				// setTimeout(() => {
-				// 	lastid = this.msgList[this.msgList.length - 1].msg.id;
-				// 	lastid++;
-				// 	msg = {
-				// 		type: 'user',
-				// 		msg: {
-				// 			id: lastid,
-				// 			time: nowDate.getHours() + ":" + nowDate.getMinutes(),
-				// 			type: type,
-				// 			userinfo: {
-				// 				uid: 1,
-				// 				username: "售后客服008",
-				// 				face: "https://zhoukaiwen.com/img/qdpz/face/face_2.jpg"
-				// 			},
-				// 			content: content
-				// 		}
-				// 	}
-				// 	// 本地模拟发送消息
-				// 	this.screenMsg(msg);
-				// }, 3000)
 			},
 
 			// 添加文字消息到列表
-			addTextMsg(msg) {
+			addTextMsg(msg) {				
 				this.msgList.push(msg);
 			},
 			// 添加语音消息到列表

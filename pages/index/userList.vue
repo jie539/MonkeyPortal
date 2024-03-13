@@ -4,13 +4,14 @@
 			<block slot="content">用户列表</block>
 		</cu-custom>
 		<view class="page-main">
-		    <liu-indexed-list :dataList="dataList" @click="click"></liu-indexed-list>
+		    <liu-indexed-list :dataList="dataList" @click="click" @search="handleSearch"></liu-indexed-list>
 		</view>
 		<cu-custom/>
 	</view>
 </template>
 
 <script>
+	import request from '@/common/request.js';
 	export default {
 		data() {
 			return {
@@ -71,6 +72,61 @@
 			//点击列表回调事件
 			click(e) {
 				console.log('点击列表回调：', e)
+				if(e.id !== this.$store.getters.guardianId){
+					let opts = {
+						url: 'userMessage/add',
+						method: 'post',
+						type :5
+					};
+					
+					let userMessage = {
+						userId1: this.$store.getters.guardianId,
+						userId2: e.id
+					}; 
+					
+					uni.showLoading({
+						title: '加载中!'
+					});
+					
+					request.httpRequest(opts,userMessage).then(res => {
+						uni.hideLoading();
+						if (res.data.code == 200) {					
+							console.log(res.data.data);
+							uni.navigateTo({
+								url:'/pages/chat/chatroom?url='+e.img+'&name='+e.name+'&guardianId='+e.id+'&userMessageId='+res.data.data.id,
+							})
+						} else {
+							console.log('error!');
+						}
+
+					});  
+				}			
+			},
+			//搜索聊天对象
+			handleSearch(searchStr) {
+			  console.log('Search string:', searchStr);
+			  if(searchStr){
+				let opts = {
+					url: 'userMessage/getUserList?fuzzyConditions='+searchStr,
+					method: 'post',
+					type :5
+				};
+				
+				uni.showLoading({
+					title: '加载中!'
+				});
+				
+				request.httpRequest(opts).then(res => {
+					uni.hideLoading();
+					if (res.data.code == 200) {					
+						console.log(res.data.data);
+						//this.dataList = this.dataList.concat(res.data.data);
+						this.dataList = res.data.data;
+					} else {
+						console.log('error!');
+					}
+				});  
+			  }
 			}
 		},
 		created() {

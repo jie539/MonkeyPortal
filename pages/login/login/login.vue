@@ -92,9 +92,11 @@
 						uni.setStorageSync('token',res.data.token)
 						this.$store.dispatch('setUserInfo', userInfo);
 						this.$store.dispatch('setGuardianId', res.data.guardianId);
+						this.$store.dispatch('setGuardianName', res.data.guardianName);
 						uni.navigateTo({
-							url:'/',
+							url:'/pages/index/tabbar',
 						})
+						this.$store.dispatch('initWebSocket',res.data.guardianId);
 					} else {
 						uni.showToast({ title: res.data.msg, icon: 'none' });
 					}
