@@ -30,7 +30,8 @@ const app = new Vue({
 		  '/pages/login/forgot/forgot',
 		  '/pages/login/register/register'
 		];
-	    if ((!uni.getStorageSync('studentInfo') || uni.getStorageSync('expireTime') < new Date().getTime()) && !excludedPaths.includes(currentPath)) {
+		//if ((!uni.getStorageSync('studentInfo') || uni.getStorageSync('expireTime') < new Date().getTime()) && !excludedPaths.includes(currentPath)) {		
+	    if ((!uni.getStorageSync('studentInfo') || uni.getStorageSync('expireTime') < new Date().getTime()) ) {
 	      // 用户未登录，并且当前页面不是登录页面，跳转到登录页面
 		  setTimeout(()=>{
 			  uni.showToast({ title: 'Login has expired', icon: 'none' });
@@ -51,6 +52,10 @@ const app = new Vue({
 		if(this.$store.getters.guardianName==''){
 			this.$store.dispatch('setGuardianName', uni.getStorageSync('guardianName'));		
 		}
+		if(this.$store.getters.local==''){
+			this.$store.dispatch('setLang', uni.getStorageSync('lang'));		
+		}
+		this.$i18n.locale = this.$store.getters.local;
 		this.$store.dispatch('initWebSocket',this.$store.getters.guardianId);
 	},
 })

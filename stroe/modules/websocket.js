@@ -48,7 +48,7 @@ const websocket = {
 
 	  // #ifdef APP-PLUS
 	  const ws = uni.connectSocket({
-		  url: `ws://appbackend.monkeytree.com.hk:8089/chat/130735`,
+		  url: `ws://appbackend.monkeytree.com.hk:8089/chat/${senderUid}`,
 		  complete: ()=> {}
 	  });
 	  uni.onSocketOpen(function (res) {

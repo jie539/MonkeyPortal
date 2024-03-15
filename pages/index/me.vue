@@ -114,7 +114,7 @@
 					</view>
 				</view>
 
-				<view class="cu-item " @click="mentalTest">
+				<!-- <view class="cu-item " @click="mentalTest">
 					<button class='content cu-btn'>
 						<image src='../../static/me/icon/bianqian.png' class='png' mode='aspectFit'></image>
 						<text class='text-lg margin-sm'>{{$t('me.quizTest')}}</text>
@@ -124,7 +124,7 @@
 						<view class="cu-tag round bg-olive light">性格</view>
 						<view class="cu-tag round bg-blue light">星座</view>
 					</view>
-				</view>
+				</view> -->
 
 				<!-- 听歌 -->
 				<!-- <view class="cu-item " bindtap="">
@@ -143,12 +143,12 @@
 					</view>
 				</view> -->
 
-				<view class="cu-item">
+				<!-- <view class="cu-item">
 					<button class='content cu-btn' open-type="share">
 						<image src='../../static/me/icon/lvhang.png' class='png' mode='aspectFit'></image>
 						<text class='text-lg margin-sm'>{{$t('me.shareMiniProgram')}}</text>
 					</button>
-				</view>
+				</view> -->
 
 				<!-- <view class="cu-item" @click="playVideo">
 					<button class='content cu-btn'>
@@ -161,13 +161,13 @@
 					</view>
 				</view> -->
 
-				<view class="cu-item">
+				<!-- <view class="cu-item">
 					<button class='content cu-btn' @tap="showGitee" data-target="ModalGitee">
 						<image style="border-radius: 50rpx;" src='https://zhoukaiwen.com/img/icon/gitee_logo.jpeg'
 							class='png' mode='aspectFit'></image>
 						<text class='text-lg margin-sm'>{{$t('me.downloadMiniProgramSourceCode')}}</text>
 					</button>
-				</view>
+				</view> -->
 
 			</view>
 
@@ -187,14 +187,14 @@
 					</button>
 				</view> -->
 
-				<view class="cu-item ">
+				<!-- <view class="cu-item ">
 					<button class='content cu-btn' open-type="contact">
 						<image src='../../static/me/icon/diannao.png' class='png' mode='aspectFit'></image>
 						<text class='text-lg margin-sm'>{{$t('me.projectRequirements')}}</text>
 					</button>
-				</view>
+				</view> -->
 
-				<view class="cu-item" @click="callPhoneNumber" data-number="18629591093">
+				<!-- <view class="cu-item" @click="callPhoneNumber" data-number="18629591093">
 					<view class='content'>
 						<image src='../../static/me/icon/dengta.png' class='png' mode='aspectFit'></image>
 						<text class='text-lg margin-sm'>{{$t('me.technicalSupport')}}</text>
@@ -202,13 +202,13 @@
 					<view class="action">
 						<view class="cu-tag round bg-blue light">186 2959 1093</view>
 					</view>
-				</view>
-				<view class="cu-item">
+				</view> -->
+				<!-- <view class="cu-item">
 					<button class='content cu-btn' open-type="feedback">
 						<image src='../../static/me/icon/chucuo.png' class='png' mode='aspectFit'></image>
 						<text class='text-lg margin-sm'>{{$t('me.feedback')}}</text>
 					</button>
-				</view>
+				</view> -->
 				<view class="cu-item">
 					<button class='content cu-btn' @tap="showStudent" data-target="DialogModal1">
 						<image src='../../static/me/icon/chucuo.png' class='png' mode='aspectFit'></image>
@@ -409,9 +409,8 @@
 			},
 			confirmLang() {
 				//localStorage.setItem('lang',this.$store.getters.lang[this.selectedIndexLang])
-				console.log(this.$store.getters.lang[this.selectedIndexLang]);
-				uni.setStorageSync('lang', this.$store.getters.lang[this.selectedIndexLang]);
-				console.log(uni.getStorageSync('lang'));
+				//uni.setStorageSync('lang', this.$store.getters.lang[this.selectedIndexLang]);
+				this.$store.dispatch('setLang', this.$store.getters.lang[this.selectedIndexLang]);	
 				this.$i18n.locale = this.$store.getters.lang[this.selectedIndexLang];
 				this.modalName = null
 			},

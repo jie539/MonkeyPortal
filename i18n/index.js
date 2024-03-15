@@ -22,16 +22,15 @@ const messages = {
 }
 
 export const getStorage = function(key){
-	uni.getStorageSync('lang');
+	if(this.$store.getters.local==''){
+		this.$store.dispatch('setLang', 'en');		
+	}
+	return this.$store.getters.local;
 }
 
-console.log(getStorage('lang'));
-
-//const lang = getStorage('lang') || 'en'
-const lang = 'en'
 // 国际化配置
 const i18n = new VueI18n({
-  locale: lang, // 默认英文
+  locale: 'en', // 默认英文
   messages
 })
 
