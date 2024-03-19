@@ -17,7 +17,8 @@ export default { // 自行分类
   	  visitor:'訪客',
   	  share:'分享',
   	  like:'點贊',
-  	  logout:'退出登錄'
+  	  logout:'退出登錄',
+	  update:'檢查更新'
   }
 }
 

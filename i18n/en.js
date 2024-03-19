@@ -17,6 +17,7 @@ export default {
 	  visitor:'visitor',
 	  share:'share',
 	  like:'like',
-	  logout:'logout'
+	  logout:'logout',
+	  update:'Check for updates',
   }
 }
