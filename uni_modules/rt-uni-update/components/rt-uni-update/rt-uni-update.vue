@@ -45,7 +45,6 @@ export default {
 			data: {
 				describe: '1. 修复已知问题<br>2. 优化用户体验',
 				edition_url: 'https://appcms.monkeytree.com.hk/appcms.apk', //安装包下载地址或者通用应用市场地址
-				//edition_url: 'https://8.134.251.154:10373/down/rW2xKufjtjzu.apk',
 				edition_force: 1, //是否强制更新 0代表否 1代表是
 				package_type: 0 ,//0是整包升级 1是wgt升级
 				edition_name:'1.0.1' //后端返回的版本名称
@@ -53,7 +52,6 @@ export default {
 		};
 	},
 	onHide() { //解决应用切换到后台再次打开更新弹窗叠加多个的问题
-		// console.log('切换到后台');
 		this.data.edition_force = 0;
 		uni.navigateBack({
 			delta: 1
@@ -94,7 +92,6 @@ export default {
 		request.httpRequest(opts).then(res => {
 			uni.hideLoading();
 			if (res.data.code == 200) {					
-				console.log(res.data.data);
 				const { describe, editionForce, editionIssue, editionName, editionNumber, editionSilence, editionUrl, packageType } = res.data.data;
 				
 				const item = {
@@ -105,8 +102,6 @@ export default {
 				    edition_name: editionName,
 				};
 				this.data = item;
-				
-				console.log(this.data);
 			} else {
 				console.log('error!');
 			}
@@ -157,7 +152,6 @@ export default {
 								force: true //true表示强制安装，不进行版本号的校验；false则需要版本号校验，
 							},
 							function() {
-								// console.log('success', success);
 								if (package_type == 1) {
 									plus.runtime.restart();
 								}

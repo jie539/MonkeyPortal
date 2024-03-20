@@ -5,8 +5,10 @@ import raditionalChinese  from "./zh_hk"; // 繁中
 import english from "./en"; // 英文
 // 国际化
 import VueI18n from 'vue-i18n'
+import store from 'stroe'
+
 import { SourceTextModule } from 'vm';
-Vue.use(VueI18n)
+Vue.use(VueI18n,store)
 
 // 配置i18n语言包
 const messages = {
@@ -22,11 +24,12 @@ const messages = {
 }
 
 export const getStorage = function(key){
-	if(this.$store.getters.local==''){
-		this.$store.dispatch('setLang', 'en');		
+	if(store.getters.local==''){
+		store.dispatch('setLang', 'en');		
 	}
-	return this.$store.getters.local;
+	return store.getters.local;
 }
+getStorage();
 
 // 国际化配置
 const i18n = new VueI18n({
