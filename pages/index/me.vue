@@ -61,7 +61,7 @@
 						<image src="../../static/logo.png" style="width: 100%; height: 100%;"></image>
 					</view>
 					<view class="padding text-blue text-xl text-bold">
-						{{$t('me.hello')}}，{{ studentName }}！{{currentVersion}}
+						{{$t('me.hello')}}，{{ studentName }}！
 					</view>
 
 				</view>
@@ -411,15 +411,15 @@
 				// 获取本地应用资源版本号
 				        plus.runtime.getProperty(plus.runtime.appid, (inf) => {
 							this.currentVersion = inf.version;
-				            //获取服务器的版本号
-				            uni.request({
-				                url: 'https://appbackend.monkeytree.com.hk/system/update/getUniUpdate', //示例接口
-				                data: {
-				                    edition_type: plus.runtime.appid,
-				                    version_type: uni.getSystemInfoSync().platform, //android或者ios
-				                    edition_number: inf.versionCode // 打包时manifest设置的版本号 
-				                },
-				                success: (res) => {
+				            //获取服务器的版本号							
+							let opts = {
+								url: 'system/update/getUniUpdate',
+								method: 'get',
+								type :5
+							};
+														
+							request.httpRequest(opts).then(res => {
+								if (res.data.code == 200) {					
 									console.log(Number(res.data.data.editionNumber));
 									console.log(Number(inf.versionCode));
 									console.log(res.data.data.editionIssue);
@@ -427,47 +427,40 @@
 									console.log(res.data.data.editionSilence);
 									console.log(res.data.data.editionUrl);
 									console.log(Number(res.data.data.editionNumber) > Number(inf.versionCode) && res
-				                        .data.data.editionIssue == 1);
-				                    //res.data.xxx根据后台返回的数据决定（我这里后端返回的是data），所以是res.data.data 
-				                    //判断后台返回版本号是否大于当前应用版本号 && 是否发行 （上架应用市场时一定不能弹出更新提示）
-				                    if (Number(res.data.data.editionNumber) > Number(inf.versionCode) && res
-				                        .data.data.editionIssue == 1) {
+									    .data.data.editionIssue == 1);
+									//判断后台返回版本号是否大于当前应用版本号 && 是否发行 （上架应用市场时一定不能弹出更新提示）
+									if (Number(res.data.data.editionNumber) > Number(inf.versionCode) && res
+									    .data.data.editionIssue == 1) {
 										console.log(1);
-				                        //如果是wgt升级，并且是静默更新 （注意！！！ 如果是手动检查新版本，就不用判断静默更新，请直接跳转更新页，不然点击检查新版本后会没反应）
-				                        if (res.data.data.packageType == 1 && res.data.data.editionSilence == 1) {
+									    //如果是wgt升级，并且是静默更新 （注意！！！ 如果是手动检查新版本，就不用判断静默更新，请直接跳转更新页，不然点击检查新版本后会没反应）
+									    if (res.data.data.packageType == 1 && res.data.data.editionSilence == 1) {
 											console.log(2);
-				                            //调用静默更新方法 传入下载地址
-				                            silenceUpdate(res.data.data.editionUrl)
-				
-				                        } else {
+									        //调用静默更新方法 传入下载地址
+									        silenceUpdate(res.data.data.editionUrl)
+													
+									    } else {
 											console.log(3);
-				                            //跳转更新页面 （注意！！！如果pages.json第一页的代码里有一打开就跳转其他页面的操作，下面这行代码最好写在setTimeout里面设置延时3到5秒再执行）
-				                            uni.navigateTo({
-				                                url: '/uni_modules/rt-uni-update/components/rt-uni-update/rt-uni-update?obj=' +
-				                                    JSON.stringify(res.data.data)
-				                            });
-				                        }
-				                    } else {
+									        //跳转更新页面 （注意！！！如果pages.json第一页的代码里有一打开就跳转其他页面的操作，下面这行代码最好写在setTimeout里面设置延时3到5秒再执行）
+									        // uni.navigateTo({
+									        //     url: '/uni_modules/rt-uni-update/components/rt-uni-update/rt-uni-update?obj=' +
+									        //         JSON.stringify(res.data.data)
+									        // });
+											this.showUpdate = true;
+									    }
+									} else {
 										console.log(4);
-				                        // 如果是手动检查新版本 需开启以下注释
-				                        /* uni.showModal({
-				                            title: '提示',
-				                            content: '已是最新版本',
-				                            showCancel: false
-				                        }) */
-				                    }
-				                },
-								fail() {
-									uni.showToast({
-										title:'shibai ',
-										icon:'none',
-										duration:2500
-									})
-								}
-				            })
-				
-				        });
-						
+									    // 如果是手动检查新版本 需开启以下注释
+									    /* uni.showModal({
+									        title: '提示',
+									        content: '已是最新版本',
+									        showCancel: false
+									    }) */
+									}
+								} else {
+									console.log('error!');
+								}							
+							}); 								
+				        });				
 				        //#endif
 			},
 			confirm() {

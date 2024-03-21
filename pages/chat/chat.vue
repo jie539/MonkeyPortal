@@ -15,6 +15,9 @@
 				<input placeholder="等待返回信息信息" name="input" v-model="getMsg"></input>
 		</view>
 		<button class="cu-btn round bg-red shadow margin-top" @tap="disconnectWebSocket">断开</button>
+		
+		<button class="cu-btn round bg-red shadow margin-top" @tap="testCon">测试连接</button>
+		<button class="cu-btn round bg-red shadow margin-top" @tap="testdisconnectWebSocket">测试断开</button>
 	</view>
 </template>
 
@@ -31,6 +34,12 @@
 			}
 		},
 		methods: {
+			testCon(){
+				this.$store.dispatch('initWebSocket',this.$store.getters.guardianId);
+			},
+			testdisconnectWebSocket(){
+				
+			},
 			async init(){
 				let that = this;
 				// 初始化 WebSocket 连接

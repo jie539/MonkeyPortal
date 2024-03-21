@@ -42,18 +42,16 @@
 							<view class="left">
 								<!-- 文字消息 -->
 								<view v-if="row.msg.type=='text'" class="bubble" @contextmenu.prevent="rightClickHandler">
-									<uv-tooltip
+									<!-- <uv-tooltip
 										:buttons="button"
 										@click="bubbleEvent"
 										:showCopy="true"
 										:isSlot="true"
 										:id="row.msg.id"
 										:copyText="extractText(row.msg.content.text)"
-									>
-									<!-- <rich-text :nodes="row.msg.content.text"></rich-text> -->
+									> -->
 									<rich-text :nodes="row.msg.content.text"></rich-text>
-									</uv-tooltip>
-									<!-- <view v-html="testMsg"></view> -->
+									<!-- </uv-tooltip> -->
 								</view>
 								<!-- 语言消息 -->
 								<view v-if="row.msg.type=='voice'" class="bubble voice" @tap="playVoice(row.msg)"
@@ -235,6 +233,8 @@ import { data } from 'uview-ui/libs/mixin/mixin';
 	export default {
 		data() {
 			return {
+				lastId:null, // 上一页最后一个ID
+				pageSize: 10, // 每次显示的记录数
 				userMessageId:0,
 				logNum:0,
 				text:'删除',
@@ -389,6 +389,7 @@ import { data } from 'uview-ui/libs/mixin/mixin';
 					    console.log('state.websocket.msg发生变化:');
 						if(msg != null){
 							this.screenMsg(JSON.parse(msg))
+							console.log(JSON.parse(msg));
 						}				
 					  },
 					);
@@ -436,35 +437,12 @@ import { data } from 'uview-ui/libs/mixin/mixin';
 				    };	
 				    // 将找到的对象替换为新对象
 				    this.$set(this.msgList, index, newMessage);
-					this.send(newMessage);
-					// let opts = {
-					// 	url: 'chatMessage/edit',
-					// 	method: 'post',
-					// 	type :5
-					// };
-					
-					// const chatMessage = {
-					// 	id: id,
-					// 	type: "system",
-					// 	newText: "撤回了一条消息"
-					// }
-					
-					// uni.showLoading({
-					// 	title: '加载中!'
-					// });
-					
-					// request.httpRequest(opts,chatMessage).then(res => {
-					// 	uni.hideLoading();
-					// 	if (res.data.code == 200) {					
-							
-					// 	} else {
-					// 		console.log('error!');
-					// 	}
-					// });
+					this.send(newMessage);				
 				}							
 			},
 			// 接受消息(筛选处理)
 			screenMsg(msg) {
+				console.log('screenMsg');
 				//从长连接处转发给这个方法，进行筛选处理
 				if (msg.type == 'system') {
 					// 系统消息
@@ -516,93 +494,46 @@ import { data } from 'uview-ui/libs/mixin/mixin';
 				//本地模拟请求历史记录效果
 				setTimeout(() => {
 					// 消息列表
-					let list = [{
-							type: "user",
-							msg: {
-								id: 1,
-								type: "text",
-								time: "12:56",
-								userinfo: {
-									uid: 123,
-									username: "大黑哥",
-									face: "https://zhoukaiwen.com/img/kevinLogo.png"
-								},
-								content: {
-									text: "web前端开发该怎么学习？"
-								}
-							}
-						},
-						{
-							type: "user",
-							msg: {
-								id: 2,
-								type: "text",
-								time: "12:57",
-								userinfo: {
-									uid: 1,
-									username: "售后客服008",
-									face: "https://zhoukaiwen.com/img/qdpz/face/face_2.jpg"
-								},
-								content: {
-									text: "按照基本路线，从html、css、js三大基础开始，然后ajax、vue进阶学习，最后学习小程序、node、react。"
-								}
-							}
-						},
-						{
-							type: "user",
-							msg: {
-								id: 3,
-								type: "voice",
-								time: "12:59",
-								userinfo: {
-									uid: 1,
-									username: "售后客服008",
-									face: "https://zhoukaiwen.com/img/qdpz/face/face_2.jpg"
-								},
-								content: {
-									url: "/static/voice/1.mp3",
-									length: "00:06"
-								}
-							}
-						},
-						{
-							type: "user",
-							msg: {
-								id: 4,
-								type: "voice",
-								time: "13:05",
-								userinfo: {
-									uid: 123,
-									username: "大黑哥",
-									face: "https://zhoukaiwen.com/img/kevinLogo.png"
-								},
-								content: {
-									url: "/static/voice/2.mp3",
-									length: "00:06"
-								}
-							}
-						},
-					]
-					// 获取消息中的图片,并处理显示尺寸
-					for (let i = 0; i < list.length; i++) {
-						if (list[i].type == 'user' && list[i].msg.type == "img") {
-							list[i].msg.content = this.setPicSize(list[i].msg.content);
-							this.msgImgList.unshift(list[i].msg.content.url);
-						}
-						list[i].msg.id = Math.floor(Math.random() * 1000 + 1);
-						this.msgList.unshift(list[i]);
+					let list = [];
+					let opts = {
+						url: `chatMessage/getChatHistory/${Viewid}/${this.pageSize}`,
+						method: 'post',
+						type :5
+					};
+					
+					let userIds = {
+						userId1: this.senderUid,
+						userId2: this.receiverUid
 					}
-
-					//这段代码很重要，不然每次加载历史数据都会跳到顶部
-					this.$nextTick(function() {
-						this.scrollToView = 'msg' + Viewid; //跳转上次的第一行信息位置
-						this.$nextTick(function() {
-							this.scrollAnimation = true; //恢复滚动动画
-						});
-
+					
+					request.httpRequest(opts,userIds).then(res => {
+						if (res.data.code == 200) {					
+							list = res.data.chatMessage.userMessages
+							if(list){
+								// 获取消息中的图片,并处理显示尺寸
+								for (let i = list.length - 1; i >= 0; i--) {
+									if (list[i].type == 'user' && list[i].msg.type == "img") {
+										list[i].msg.content = this.setPicSize(list[i].msg.content);
+										this.msgImgList.unshift(list[i].msg.content.url);
+									}
+									this.msgList.unshift(list[i]);
+								}
+								
+								//这段代码很重要，不然每次加载历史数据都会跳到顶部
+								this.$nextTick(function() {
+									this.scrollToView = 'msg' + Viewid; //跳转上次的第一行信息位置
+									this.$nextTick(function() {
+										this.scrollAnimation = true; //恢复滚动动画
+									});
+								
+								});
+								this.isHistoryLoading = false;
+							}							
+						} else {
+							console.log('error!');
+						}
 					});
-					this.isHistoryLoading = false;
-
+					
 				}, 1000)
 			},
 			// 加载初始页面消息
@@ -611,7 +542,7 @@ import { data } from 'uview-ui/libs/mixin/mixin';
 				
 				let list=[]
 				let opts = {
-					url: 'chatMessage/getChatHistory',
+					url: `chatMessage/getChatHistory/${this.lastId}/${this.pageSize}`,
 					method: 'post',
 					type :5
 				};
@@ -774,7 +705,6 @@ import { data } from 'uview-ui/libs/mixin/mixin';
 										console.error(error); // 发生错误时的处理
 									});
 									
-
 									this.sendMsg(msg, 'img');
 								}
 							});
@@ -832,26 +762,14 @@ import { data } from 'uview-ui/libs/mixin/mixin';
 					this.hideDrawer();
 				}
 			},
-			// disconnectWebSocket() {
-			// 	const ws = this.$store.state.websocket.ws;
-			// 	  if (ws) {
-			// 	  } else {
-			// 		console.error('WebSocket 连接尚未建立');
-			// 	  }
-			// },
+
 			send(msg){
-				const ws = this.$store.state.websocket.ws;
-			  if (ws) {
-				  var messageObject = {
-				          action: 'sendMessageToUser',
-				          userId: this.receiverUid,
-				          message: msg
-				  };
-				ws.send(JSON.stringify(messageObject));
-				console.log('send');
-			  } else {
-				console.error('WebSocket 连接尚未建立');
-			  }
+				const messageObject = {
+				        action: 'sendMessageToUser',
+				        userId: this.receiverUid,
+				        message: msg
+				};
+				this.$store.dispatch('sendSocketMessage',JSON.stringify(messageObject));
 			},
 			// 发送文字消息
 			sendText() {
@@ -922,7 +840,9 @@ import { data } from 'uview-ui/libs/mixin/mixin';
 			},
 
 			// 添加文字消息到列表
-			addTextMsg(msg) {				
+			addTextMsg(msg) {		
+				console.log('addTextMsg');
+				console.log(msg);
 				this.msgList.push(msg);
 			},
 			// 添加语音消息到列表
