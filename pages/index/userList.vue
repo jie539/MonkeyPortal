@@ -71,7 +71,6 @@
 		methods: {
 			//点击列表回调事件
 			click(e) {
-				console.log('点击列表回调：', e)
 				if(e.id !== this.$store.getters.guardianId){
 					let opts = {
 						url: 'userMessage/add',
@@ -91,7 +90,6 @@
 					request.httpRequest(opts,userMessage).then(res => {
 						uni.hideLoading();
 						if (res.data.code == 200) {					
-							console.log(res.data.data);
 							uni.navigateTo({
 								url:'/pages/chat/chatroom?url='+e.img+'&name='+e.name+'&guardianId='+e.id+'&userMessageId='+res.data.data.id,
 							})
@@ -104,7 +102,6 @@
 			},
 			//搜索聊天对象
 			handleSearch(searchStr) {
-			  console.log('Search string:', searchStr);
 			  if(searchStr){
 				let opts = {
 					url: 'userMessage/getUserList?fuzzyConditions='+searchStr,
@@ -119,8 +116,6 @@
 				request.httpRequest(opts).then(res => {
 					uni.hideLoading();
 					if (res.data.code == 200) {					
-						console.log(res.data.data);
-						//this.dataList = this.dataList.concat(res.data.data);
 						this.dataList = res.data.data;
 					} else {
 						console.log('error!');

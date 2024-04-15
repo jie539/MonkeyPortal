@@ -4,8 +4,8 @@
 		<cu-custom bgColor="bg-gradual-blue" :isBack="false">
 			<!-- <block slot="backText">返回</block> -->
 			<block slot="content">首页</block>
+
 		</cu-custom>
-		<h1></h1>
 
 		<!-- 		<add-tip :tip="tip" :duration="duration" /> -->
 
@@ -107,7 +107,7 @@
 							</view> -->
 							<view class="nav-content" style="background-color: #ffcb23;">
 <!-- 								<u-image src="http://194.233.70.163:8080/monkeyTreeTest20211104/c68bc383-eb13-45a9-a5de-658bf9e24d54.jpg"></u-image> -->
-								<u-image :src="item" width="100%" height="260rpx" :lazy-load="true" border-radius="30rpx" mode="aspectFill" @click="productDetail(item)">
+								<u-image :src="item.uploadFile" style="position: relative;" width="100%" height="260rpx" :lazy-load="true" border-radius="30rpx" mode="aspectFill" @click="productDetail(item)">
 									<u-loading slot="loading"></u-loading>
 								</u-image>
 							</view>
@@ -161,13 +161,8 @@
 		},
 		data() {
 			return {
-				products:[
-					'http://194.233.70.163:8080/monkeyTreeTest20211104/p1.jpg',
-					'http://194.233.70.163:8080/monkeyTreeTest20211104/p2.jpg',
-					'http://194.233.70.163:8080/monkeyTreeTest20211104/p3.jpg',
-					'http://194.233.70.163:8080/monkeyTreeTest20211104/p4.jpg',
-					'http://194.233.70.163:8080/monkeyTreeTest20211104/p5.jpg',
-				],
+				prefixUrl: 'http://194.233.70.163:8080/monkeyTreeTest20211104/',
+				products:[],
 				tip: '点击「添加小程序」，下次访问更便捷',
 				duration: 1,
 
@@ -255,20 +250,9 @@
 		watch: {},
 		mounted() {
 			this.getData();
-
-
+			
 			// 在页面中定义插屏广告
 			let interstitialAd = null
-
-			// 在页面onLoad回调事件中创建插屏广告实例
-			// if (wx.createInterstitialAd) {
-			//   interstitialAd = wx.createInterstitialAd({
-			//     adUnitId: 'adunit-0843cdd8084e561d'
-			//   })
-			//   interstitialAd.onLoad(() => {})
-			//   interstitialAd.onError((err) => {})
-			//   interstitialAd.onClose(() => {})
-			// }
 
 			// 在适合的场景显示插屏广告
 			if (interstitialAd) {
@@ -278,12 +262,40 @@
 			}
 			// 插屏广告结束
 		},
+		created() {
+			this.getProducts();
+		},
 		methods: {
 			productDetail(item){
-				console.log(item);
 				uni.navigateTo({
-					url:'/pages/productDetail/productDetail01?productImg='+item
+					url:`/pages/product/productDetail?item=`+ encodeURIComponent(JSON.stringify(item))
 				})
+			},
+			getProducts(){
+				let opts = {
+					url: 'system/product/getProducts',
+					method: 'get',
+					type :5
+				};
+				
+				uni.showLoading({
+					title: '加载中!'
+				});
+				request.httpRequest(opts).then(res => {
+					uni.hideLoading();
+					if (res.data.code == 200) {					
+						const products = res.data.data.map(item => {
+						  // 拼接前缀url和uploadFile
+						  item.uploadFile = this.prefixUrl + item.uploadFile
+						  return item;
+						});
+						
+						// 将更新后的 products 添加到 products 集合中
+						this.products = products;
+					} else {
+						console.log('error!');
+					}
+				});
 			},
 			getData() {
 				let opts = {
@@ -296,9 +308,7 @@
 				this.old.scrollTop = e.detail.scrollTop;
 			},
 			goCategorieslist: function(e) {
-				console.log(e.currentTarget.dataset.mid)
 				if (e.currentTarget.dataset.mid == 1 || e.currentTarget.dataset.mid == 2) {
-					console.log(555);
 					uni.navigateTo({
 						url: '../timeline?mid=' + e.currentTarget.dataset.mid
 					});
@@ -307,8 +317,6 @@
 						url: '../../os_project/index'
 					});
 				} else if (e.currentTarget.dataset.mid == 4) {
-					// this.$emit('ShowNews', 'news')
-					// console.log('文章资讯')
 					uni.navigateTo({
 						url: '../../pages/chat/chat'
 					});

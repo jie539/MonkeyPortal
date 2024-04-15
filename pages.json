@@ -184,7 +184,7 @@
 			}
 		},
 		{
-			"path" : "pages/productDetail/productDetail01",
+			"path" : "pages/product/productDetail",
 			"style" : 
 			{
 				"navigationBarTitleText" : "",
@@ -206,6 +206,14 @@
 					"titleNView": false
 				},
 				"disableScroll": true
+			}
+		},
+		{
+			"path" : "pages/product/productOrder",
+			"style" : 
+			{
+				"navigationBarTitleText" : "order",
+				"enablePullDownRefresh" : false
 			}
 		}
 	],

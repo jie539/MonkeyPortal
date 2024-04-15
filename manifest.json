@@ -2,8 +2,8 @@
     "name" : "Monkey Portal",
     "appid" : "__UNI__6EDCC75",
     "description" : "Monkey Portal",
-    "versionName" : "1.0.8",
-    "versionCode" : 108,
+    "versionName" : "1.0.15",
+    "versionCode" : 1015,
     "transformPx" : false,
     /* 5+App特有相关 */
     "app-plus" : {

@@ -229,18 +229,17 @@
 	import { onlineEmoji, emojiList } from '@/tn_components/chat/emojiData/emojiData.js';
 	import { stdout } from 'process';
 	import { SourceTextModule } from 'vm';
-import { data } from 'uview-ui/libs/mixin/mixin';
+	import { data } from 'uview-ui/libs/mixin/mixin';
 	export default {
 		data() {
 			return {
+				prefixUrl:'https://appcms.monkeytree.com.hk/prod-api',
 				lastId:null, // 上一页最后一个ID
 				pageSize: 10, // 每次显示的记录数
 				userMessageId:0,
 				logNum:0,
 				text:'删除',
-				button:['撤回'],
-				testMsg:`<div><uv-tooltix :buttons="button" @click="bubbleEvent" :showCopy="true" :isSlot="true" :id="row.msg.id"><rich-text nodes="123">123</rich-text></uv-tooltip></div>`,
-				testMsg2:`<div style="text-align:center;background-color: #007AFF;"><div >我是内容</div><img src="https://qiniu-web-assets.dcloud.net.cn/unidoc/zh/uni@2x.png"/></div>`,					
+				button:['撤回'],			
 				//文字消息
 				textMsg: '',
 				//消息列表
@@ -249,7 +248,6 @@ import { data } from 'uview-ui/libs/mixin/mixin';
 				scrollTop: 0,
 				scrollToView: '',
 				msgList: [],
-				msgList2: [],
 				msgImgList: [],
 				senderUid: this.$store.getters.guardianId,
 				senderFace:'https://zhoukaiwen.com/img/kevinLogo.png',
@@ -346,7 +344,6 @@ import { data } from 'uview-ui/libs/mixin/mixin';
 			uni.getStorage({
 				key: 'redEnvelopeData',
 				success: (res) => {
-					console.log(res.data);
 					let nowDate = new Date();
 					let lastid = this.msgList[this.msgList.length - 1].msg.id;
 					lastid++;
@@ -389,7 +386,6 @@ import { data } from 'uview-ui/libs/mixin/mixin';
 					    console.log('state.websocket.msg发生变化:');
 						if(msg != null){
 							this.screenMsg(JSON.parse(msg))
-							console.log(JSON.parse(msg));
 						}				
 					  },
 					);
@@ -563,6 +559,7 @@ import { data } from 'uview-ui/libs/mixin/mixin';
 							// 获取消息中的图片,并处理显示尺寸
 							for (let i = 0; i < list.length; i++) {
 								if (list[i].type == 'user' && list[i].msg.type == "img") {
+									list[i].msg.content.url = this.prefixUrl + list[i].msg.content.url;
 									list[i].msg.content = this.setPicSize(list[i].msg.content);
 									this.msgImgList.push(list[i].msg.content.url);
 								}
@@ -638,7 +635,6 @@ import { data } from 'uview-ui/libs/mixin/mixin';
 			},
 			//选照片 or 拍照
 			getImage(type) {
-				console.log("本地图片");
 				this.hideDrawer();
 				uni.chooseImage({
 					sourceType: [type],
@@ -648,98 +644,53 @@ import { data } from 'uview-ui/libs/mixin/mixin';
 							uni.getImageInfo({
 								src: res.tempFilePaths[i],
 								success: (image) => {
-									console.log(image.width);
-									console.log(image.height);
-									let msg = {
+									let imgMsg = {
 										url: res.tempFilePaths[i],
 										w: image.width,
 										h: image.height
 									};
-									// 发送图片信息和图片文件到服务器
-									//this.uploadImageToServer(msg);
-									// uni.uploadFile({
-									// 	url: 'https://appportal.monkeytree.com.hk/upload/image', //仅为示例，非真实的接口地址
-									// 	filePath: res.tempFilePaths[i],
-									// 	name: 'file',
-									// 	formData: {
-									// 		'user': 'test'
-									// 	},
-									// 	success: (uploadFileRes) => {
-									// 		console.log(uploadFileRes.data);
-									// 	}
-									// });
-									// 发送图片信息和图片文件到服务器
-									// uploadImageRequest({
-									//     type: 5, // 根据需要设置请求类型
-									//     url: 'upload/image' // 上传图片的接口路径，不需要baseUrl
-									// }, {
-									//     file: res.tempFilePaths[i], // 将图片路径作为文件参数
-									//     user: 'test' // 其他表单数据
-									// }).then((uploadFileRes) => {
-									//     console.log(uploadFileRes); // 上传成功后的处理
-									// }).catch((error) => {
-									//     console.error(error); // 发生错误时的处理
-									// });
-									
-									let opts = {
-										url: 'commmon/upload',
-										method: 'post',
-										type :5
-									};
-									
-									let formData = new FormData();
-									formData.append('file', res.tempFilePaths[i]); // 添加文件数据到FormData对象
-									formData.append('user', 'test'); // 添加其他表单数据到FormData对象
-					
-									uni.showLoading({
-										title: '加载中!'
-									});
-									request.uploadImageRequest(opts,formData).then(res => {
-										uni.hideLoading();
-										if (res.data.code == 200) {	
-										} else {
-											console.log('error!');
+											
+									let lastid = this.msgList[this.msgList.length - 1].msg.id;		
+									lastid++;
+									var nowDate = new Date();
+									let userMessage = {
+										type: 'user',
+										msg: {
+											id:lastid,
+											userMessageId:this.userMessageId,
+											time: timeFormat( nowDate, 'YYYY-MM-DD HH:mm:ss'),
+											type: 'img',
+											userinfo: {
+												uid: this.senderUid,
+												username: this.senderName,
+												face: this.senderFace
+											},
+											content: imgMsg
 										}
-									}).catch(error => {
-										uni.hideLoading();
-										console.error(error); // 发生错误时的处理
+									}
+									// 发送图片信息和图片文件到服务器
+									uni.uploadFile({
+										url: 'https://appbackend.monkeytree.com.hk/chatMessage/uploadChatImage', 
+										filePath: res.tempFilePaths[i],
+										name: 'file',
+										formData: {
+											'user': 'test',
+											'userMessage':JSON.stringify(userMessage),
+											'receiverUid' :this.receiverUid,
+										},
+										success: (uploadFileRes) => {
+											console.log(uploadFileRes.data);
+										},
+										fail(err){
+											console.log("上传失败",err);
+										}
 									});
-									
-									this.sendMsg(msg, 'img');
+									this.screenMsg(userMessage);														
 								}
 							});
 						}
 					}
 				});
-			},
-			// 将图片信息和图片文件一起上传到服务器
-			uploadImageToServer(msg) {
-			  let formData = new FormData();
-			  formData.append('imageFile', msg.url);
-			  formData.append('width', msg.w);
-			  formData.append('height', msg.h);
-			
-			  // 将FormData对象转换为普通的对象
-			  let data = {};
-			  formData.forEach((value, key) => {
-			    data[key] = value;
-			  });
-			  
-			  // 发起网络请求
-			  uni.request({
-			    url: 'https://appbackend.monkeytree.com.hk/upload/image',
-			    method: 'POST',
-			    data: data, // 传递转换后的普通对象给data参数
-			    header: {
-			      'content-type': 'multipart/form-data'
-			    },
-			    success: res => {
-			      console.log('上传成功', res);
-			    },
-			    fail: err => {
-			      console.error('上传失败', err);
-			    }
-			  });
 			},
 			// 选择表情
 			chooseEmoji() {
@@ -788,10 +739,6 @@ import { data } from 'uview-ui/libs/mixin/mixin';
 			replaceEmoji(str) {
 				let replacedStr = str.replace(/\[([^(\]|\[)]*)\]/g, (item, index) => {
 					
-					console.log("str: " + str);
-					console.log("index: " + index);
-					console.log("item: " + item);
-					
 					for (let i = 0; i < this.emojiList.length; i++) {
 						let row = this.emojiList[i];
 						for (let j = 0; j < row.length; j++) {
@@ -802,7 +749,6 @@ import { data } from 'uview-ui/libs/mixin/mixin';
 								let onlinePath = 'https://zhoukaiwen.com/img/icon/emojj1/'
 								let imgstr = '<img width="32rpx" src="' + onlinePath + this.onlineEmoji[EM.url] +
 									'">';
-								console.log("imgstr: " + imgstr);
 								return imgstr;
 							}
 						}
@@ -813,7 +759,6 @@ import { data } from 'uview-ui/libs/mixin/mixin';
 
 			// 发送消息
 			sendMsg(content, type) {
-				console.log(content);
 				//实际应用中，此处应该提交长连接，模板仅做本地处理。
 				var nowDate = new Date();
 				let lastid = this.msgList.length > 0 ? this.msgList[this.msgList.length - 1].msg.id : 1;
@@ -840,9 +785,7 @@ import { data } from 'uview-ui/libs/mixin/mixin';
 			},
 
 			// 添加文字消息到列表
-			addTextMsg(msg) {		
-				console.log('addTextMsg');
-				console.log(msg);
+			addTextMsg(msg) {	
 				this.msgList.push(msg);
 			},
 			// 添加语音消息到列表
@@ -851,6 +794,10 @@ import { data } from 'uview-ui/libs/mixin/mixin';
 			},
 			// 添加图片消息到列表
 			addImgMsg(msg) {
+				// 将URL添加前缀
+				if(!msg.msg.content.url.includes('blob')){
+					msg.msg.content.url = this.prefixUrl + msg.msg.content.url;
+				}
 				msg.msg.content = this.setPicSize(msg.msg.content);
 				this.msgImgList.push(msg.msg.content.url);
 				this.msgList.push(msg);

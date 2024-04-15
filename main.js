@@ -43,11 +43,15 @@ const app = new Vue({
 		  },1000)
 	    }else{
 			 this.$store.state.user.studentInfo = uni.getStorageSync('studentInfo');
-			 this.$store.state.user.studentId = uni.getStorageSync('studentId');
-			 this.$store.state.user.studentName = uni.getStorageSync('studentName');	
+			 this.$store.state.user.studentId = uni.getStorageSync('info').studentId;
+			 this.$store.state.user.studentName = uni.getStorageSync('info').studentName;	
+			 this.$store.state.user.info = uni.getStorageSync('info');
+			 this.$i18n.locale = this.$store.getters.local;
+			 
 		}
 		if(this.$store.getters.guardianId==''){
-			this.$store.dispatch('setGuardianId', uni.getStorageSync('guardianId'));		
+			this.$store.dispatch('setGuardianId', uni.getStorageSync('guardianId'));
+			this.$store.dispatch('initWebSocket',this.$store.getters.guardianId);
 		}
 		if(this.$store.getters.guardianName==''){
 			this.$store.dispatch('setGuardianName', uni.getStorageSync('guardianName'));		
@@ -55,8 +59,6 @@ const app = new Vue({
 		if(this.$store.getters.local==''){
 			this.$store.dispatch('setLang', uni.getStorageSync('lang'));		
 		}
-		this.$i18n.locale = this.$store.getters.local;
-		this.$store.dispatch('initWebSocket',this.$store.getters.guardianId);
 	},
 })
 app.$mount()

@@ -3,7 +3,6 @@
 		<cu-custom bgColor="bg-gradual-blue" :isBack="false">
 			<block slot="content">聊天列表</block>
 		</cu-custom>
-<!-- 		<view class="cu-item" :class="{ 'move-cur': modalName === 'move-box-' + index, 'bottom': index === chatRecords.length - 1+10 }" v-for="(item, index) in chatRecords" :key="index" -->
 		<view class="cu-item" :class="modalName=='move-box-'+ index?'move-cur':''" v-for="(item,index) in chatRecords" :key="index"  
 		  @touchstart="ListTouchStart" @touchmove="ListTouchMove" @touchend="ListTouchEnd" @tap="ListListTouch(item)" :data-target="'move-box-' + index">
 		  <view class="cu-avatar round lg" :style="{ backgroundImage: 'url(' + item.avatar + ')' }"></view>
@@ -144,16 +143,8 @@
 				]
 			}
 		},
-		onShow() {
-			console.log("onshow");
-		},
-		onLoad() {
-			//this.getChatList();
-			console.log("onload");
-		},
 		created() {
 			this.getChatList();
-			console.log("created");
 		},
 		computed:{
 			getMessage(){
@@ -163,8 +154,6 @@
 		watch: {
 		  getMessage(newValue, oldValue) {
 		    // 在 getMessage 的值发生变化时执行相应的操作
-			console.log(JSON.parse(newValue));
-		    console.log(JSON.parse(newValue).msg.userinfo.uid);
 			let { msg: { id, userMessageId, time, type, userinfo: { uid, username, face }, content: { text } } } = JSON.parse(newValue);
 			// 查找是否存在 guardianId 等于 uid 的对象
 			const existingRecordIndex = this.chatRecords.findIndex(record => record.guardianId === uid);
@@ -211,7 +200,6 @@
 				request.httpRequest(opts).then(res => {
 					uni.hideLoading();
 					if (res.data.code == 200) {					
-						console.log(res.data.chatMessage);
 						const items = res.data.chatMessage.map(({ face, username, text, createTime, unreadNum, uid, userMessageId }) => {
 						    return {
 						        avatar: face,
@@ -224,7 +212,6 @@
 						        isSuccess: true // 这里没有原始数据中的字段，我假设为 true
 						    };
 						});
-						console.log(items);
 						this.chatRecords.push(...items);
 					} else {
 						console.log('error!');
@@ -233,7 +220,6 @@
 			},
 			deleteItem(index,item){
 				this.chatRecords.splice(index, 1);
-				console.log(item);
 				let opts = {
 					url: 'userMessage/updateUserListDetail',
 					method: 'post',
@@ -255,8 +241,6 @@
 					uni.hideLoading();
 					//判断返回状态码
 					if (res.data.code == 200) {					
-						//打印返回数据
-						console.log(res.data);	
 						//强制更新组件
 						this.$forceUpdate()			
 					} else {
@@ -268,7 +252,6 @@
 			Topping(index,item){
 				const selectedRecord = this.chatRecords.splice(index, 1)[0];
 				this.chatRecords.unshift(selectedRecord);
-				console.log(item);
 				let opts = {
 					url: 'userMessage/updateUserListDetail',
 					method: 'post',
@@ -296,16 +279,6 @@
 				});
 			},
 			ListListTouch(item){
-				  // 获取点击的元素
-				  //const targetElement = event.currentTarget;
-			
-				  // 通过操作 DOM 获取相应的值
-				  //const name = targetElement.querySelector('.text-grey').textContent;
-				  //const url = targetElement.querySelector('.cu-avatar').style.backgroundImage;
-				  // 输出获取到的值
-				  //console.log('Name:', name);
-				  //console.log('URL:', url);
-				  console.log(item);
 				  uni.navigateTo({
 				  	url:'/pages/chat/chatroom?url='+item.avatar+'&name='+item.senderName+'&guardianId='+item.guardianId+'&userMessageId='+item.userMessageId,
 				  })

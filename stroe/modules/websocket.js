@@ -9,6 +9,7 @@ const websocket = {
     },
 	someMutation(state,msg){
 	  state.msg = msg;
+	  console.log(msg);
 	},
 	sendMessage(state, { action, receiverUid, senderUid }) {
 	  if (state.ws) {

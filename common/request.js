@@ -147,41 +147,6 @@ const httpTokenRequest = (opts, data) => {
 
 };
 
-//图片上传
-const uploadImageRequest = (opts, formData) => { // 修改函数参数为formData
-    let baseUrl;
-    if (opts.type == 2) {
-        baseUrl = 'https://www.zhoukaiwen.com/';
-    } else if (opts.type == 3) {
-        baseUrl = 'https://gamejava.monkeytree.com.hk/';
-    } else if (opts.type == 4) {
-        baseUrl = 'http://localhost:8080/monkeytownHK/';
-    } else if (opts.type == 5) {
-        //baseUrl = 'http://localhost:8085/';
-        baseUrl = 'https://appbackend.monkeytree.com.hk/';
-    } else {
-        baseUrl = 'https://api.zhoukaiwen.com/';
-    }
-
-    return new Promise(function(resolve, reject) {
-        uni.uploadFile({
-            url: baseUrl + opts.url,
-            formData: formData, // 将formData对象作为formData参数传递
-            name: 'file', // 设置文件字段名称
-            header: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'Content-Type': 'multipart/form-data' // 设置请求头为multipart/form-data
-            },
-            success: (res) => {
-                resolve(res.data); // 上传文件成功后返回响应数据
-            },
-            fail: (error) => {
-                reject(error); // 上传文件失败时返回错误信息
-            }
-        });
-    });
-};
-
 // 拦截器
 const hadToken = () => {
 	let token = uni.getStorageSync('token');
@@ -204,6 +169,5 @@ export default {
 	baseUrl,
 	httpRequest,
 	httpTokenRequest,
-	uploadImageRequest,
 	hadToken
 }
